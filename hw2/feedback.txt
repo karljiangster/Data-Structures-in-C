@@ -1,0 +1,447 @@
+_total-score_ 86/91
+2.928968
+AUTOMATIC GRADING (bjr)
+
+TESTS : 
+
+-------------------------
+Test: nth_harmonic(0); expecting : 0
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: nth_harmonic(1); expecting : 1
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: nth_harmonic(5); expecting : 2.283333
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: nth_harmonic(10); expecting : 2.928968
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: nth_harmonic(20); expecting : 3.597740
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: harmonic_solve(-1); expecting : 0
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: harmonic_solve(1); expecting : 1
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: harmonic_solve(2); expecting : 4
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: harmonic_solve(5); expecting : 83
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: harmonic_solve(10); expecting : 12367
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: pi_approx(1); expecting : 4
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: pi_approx(10); expecting : 3.304518
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: pi_approx(100); expecting : 3.160417
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: pi_approx(1000); expecting : 3.143555
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: pi_approx(10000); expecting : 3.141791
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: circle(0); expecting : (output)
+Point Value: 5
+PASSED :  + 5/5 pts
+-------------------------
+
+-------------------------
+Test: circle(1); expecting : (output)
+Point Value: 5
+PASSED :  + 5/5 pts
+-------------------------
+
+-------------------------
+Test: circle(5); expecting : (output)
+Point Value: 5
+PASSED :  + 5/5 pts
+-------------------------
+
+-------------------------
+Test: triangles(2, 3, 4); expecting : (output)
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: triangles(2, 3, 5); expecting : (output)
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: triangles(2, 4, 4); expecting : (output)
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: triangles(3, 3, 4); expecting : (output)
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: triangles(5, 5, 5); expecting : (output)
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: int_div(42, 7, ...); expecting : q = 6
+Point Value: 2
+PASSED :  + 2/2 pts
+-------------------------
+
+-------------------------
+Test: int_div(42, 7, ...); expecting : r = 0
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Test: int_div(42, 8, ...); expecting : q = 5
+Point Value: 2
+PASSED :  + 2/2 pts
+-------------------------
+
+-------------------------
+Test: int_div(42, 8, ...); expecting : r = 2
+Point Value: 3
+PASSED :  + 3/3 pts
+-------------------------
+
+-------------------------
+Expecting error: int_div(1, 0, ...); expecting : (err)
+Point Value: 5
+PASSED: Found expected error.
+-------------------------
+
+-------------------------
+SUMMARY 
+Total : 90/90
+Subtotal: 45/45
+
+;; === style ===
+
+;; development process               10/ 10
+
+;; adequate tests                     8/ 10
+-2 most test functions only had 1 test
+(for helper functions, as well)
+
+;; well-written purposes              4/ 4
+;; proper indentation, line breaks    3/ 4
+-1 improper indentation for for loops
+;; well-named variables               4/ 4
+;; well-chosen types                  4/ 4
+
+;; === efficiency ===
+;; proper abstraction through functions 5/ 8
+-3 - instance of repeated code in multiple functions - make function
+;; avoiding blatant inefficiency    3/ 6
+ -3 - for harmonic_solve, calls nth_harmonic for each number rather than
+    - recalculating in the loop yourself
+
+;; style _subtotal_:                41/ 46
+
+
+;; graded by kosydney
+/* Karl Jiang, karljiang 
+* CS 152, Winter 2016
+* HW2
+*/ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include "hw2.h" 
+
+
+void evidence_nth_harmonic() { 
+
+    printf("\nTesting nth harmonic \n"); 
+
+    int nths [] = {0, 1, 5, 100, 35635645}; 
+    double expt [] = {0.0, 1.0, 2.28333333333, 5.187377517639621, 17.966072637866933}; 
+    
+    int cases = 5; 
+    for(int i = 0; i < cases; ++i) { 
+	printf("expected: %f \t| actual: %f \t| \n", expt[i], nth_harmonic( nths [i] ) );	
+    } 
+} 
+
+
+void evidence_harmonic_solve() { 
+    
+    printf("\nTesting harmonic_solve \n"); 
+
+    double inputs [] = {-57.8, 0.0, 1.0, 2.283333331, 5.1873775176391, 17.96607263701}; 
+    unsigned int expt [] = {0, 0, 1, 5, 100, 35635645}; 
+    
+    int cases = 6; 
+    for(int i = 0; i < cases; ++i) { 
+	printf("expected: %u \t| actual: %u \t| \n", expt[i], harmonic_solve( inputs [i] ) );	
+    } 
+
+}
+
+
+void evidence_pi_approx() { 
+
+    printf("\nTesting pi_approx \n"); 
+
+    unsigned int inputs [] = {0, 1, 4, 100}; 
+    double expt [] = {0.0, 4.0, 3.49570907, 3.16041703178}; 
+     
+    int cases = 4; 
+    for(int i = 0; i < cases; ++i) { 
+	printf("expected: %f \t| actual: %f \t| \n", expt[i], pi_approx( inputs [i] ) );	
+    }    
+}
+
+
+void evidence_circle() { 
+    
+    printf("\nTesting pi_approx \n"); 
+
+    unsigned int inputs [] = {0, 1, 5}; 
+    char* expt [] = {"*", " *\n***\n *", "     *\n  *******  \n ********* \
+\n ********* \n ********* \n***********\n ********* \n ********* \
+\n ********* \n  *******  \n     *     "};     
+    int cases = 3; 
+    for(int i = 0; i < cases; ++i) { 
+	printf("expected: \n%s \nactual: \n", expt[i]); 
+	circle(inputs[i]); 
+	printf("\n");
+    } 
+     
+} 
+
+void evidence_triangles() { 
+
+    printf("\nTesting triangles \n"); 
+
+    unsigned int rows [] = {2, 0, 1};
+    unsigned int cols [] = {3, 1, 1}; 
+    unsigned int heights [] = {4, 0, 1};   
+    char* expt [] = { 
+    "*   *   *\n**  **  **\n*** *** ***\n************\n*   *  \
+ *   \n**  **  **  \n*** *** *** \n************", "", "*"};   
+     
+    int cases = 3; 
+    for(int i = 0; i < cases; ++i) { 
+	printf("expected: \n%s \nactual: \n", expt[i]); 
+	triangles(rows[i], cols[i], heights[i]);
+	printf("\n");
+	 
+    }     
+} 
+ 
+
+void evidence_int_div() { 
+ 
+    printf("\nTesting int_div \n"); 
+
+    unsigned int ns [] = {0, 1, 4, 10, 15, 21, 33, 48493, 4294967295, 12, 7}; 
+    unsigned int ds [] = {1, 3, 5, 2, 3, 8, 16, 17, 35345, 4294967295, 0};
+    unsigned int qs [] = {0, 0, 0, 5, 5, 2, 2, 2852, 121515, 0, 0}; 
+    unsigned int rs [] = {0, 1, 4, 0, 0, 5, 1, 9, 19620, 12, 0};    
+     
+    int cases = 11; 
+    
+    unsigned int q = 0, r = 0; 
+    unsigned int *qp = &q, *rp = &r;  
+ 
+    for(int i = 0; i < cases; ++i) { 
+	printf("expected (q, r) : (%u, %u) \t| actual: ", qs[i], rs[i]); 
+	int_div(ns[i], ds[i], qp, rp); 
+	printf("(%u, %u) \n", q, r);     
+    } 
+} 
+ 
+int main() { 
+    
+    evidence_nth_harmonic(); 
+    evidence_harmonic_solve(); 
+    evidence_pi_approx();
+    evidence_triangles();
+    evidence_circle();
+    evidence_int_div(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+* CS 152, Winter 2016
+* HW2
+*/ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <math.h> 
+
+/* Given n, returns the nth harmonic number as a double. */ 
+double nth_harmonic(unsigned int n){ 
+    
+    double sum = 0; 
+    for(int i = 1; i <= n; ++i) { 
+	sum += 1.0 / i;  
+    }  
+    return sum; 
+}  
+
+/* Returns the least value n s.t. nth harmonic number is at least x. */ 
+unsigned int harmonic_solve(double x) { 
+    
+    double sum = 0.0;
+    int n = 0;  
+    while(sum < x) {
+	n++;  
+	sum += 1.0 / n;  
+    }   
+    return n; 
+}  
+
+/* integrates sqrt(1- x^2) with x: [0,1] to calculate pi. Uses reimann sums. */  
+double pi_approx(unsigned int n) { 
+    
+    if(!n) 
+	return 0; 
+    double area = 0; 
+    double width = 1.0 / n; 
+    double x = 0; 
+    
+    while(x < 1.0) {
+	double height = sqrt(1 - x * x);  
+	area += (width * height); 
+	x += width; 	
+    } 
+    return 4 * area; 
+}  
+
+/* prints the circle s.t. x^2 + y^2 <= radius^2.*/ 
+void circle(unsigned int radius) { 
+ 
+    int area = radius * radius; 
+    int rminus = -1 * radius;  
+    
+    for(int y = radius; y >= rminus; --y) { 
+	for(int x = radius; x >= rminus; --x) { 
+	    if(y * y + x * x <= area) 
+		printf("*");
+	    else
+		printf(" "); 
+	} 
+	printf("\n");
+    }
+} 
+
+/* prints a matrix of triangles given their height, num of rows and cols in matrix. */ 
+void triangles(unsigned int rows, unsigned int cols, 
+unsigned int tri_height) {
+    
+    for(int r = 0; r < rows; ++r) { 
+	for(int y = 0; y < tri_height; ++y) {
+	    for(int c = 0; c < cols; ++c) { 
+		for(int x = 0; x < tri_height; ++x) { 
+		    if(x <= y) 
+			printf("*");
+		    else 
+			printf(" "); 
+		}   
+	    }
+	    printf("\n");
+	}  
+    }      
+} 
+
+/* Given numerator n and denominator d, gives the quotient q
+* and remainder r as out parameters. 
+*/ 
+void int_div(unsigned int n, unsigned int d, unsigned int* q, unsigned int* r) { 
+
+    if(!d) { 
+	fprintf(stderr, "Can't divide by negative number."); 
+	exit(1); 
+    } 
+
+    unsigned int quotient = 0; 
+    while(n >= d) { 
+	n = n - d; 
+	quotient++; 
+    }     
+    
+    *q = quotient; 
+    *r = n; 
+} 
+
+/* Given n, returns the nth harmonic number as a double. */ 
+double nth_harmonic(unsigned int n);
+
+/* Returns the least value n s.t. nth harmonic number is at least x. */ 
+unsigned int harmonic_solve(double x);
+
+/* integrates sqrt(1- x^2) with x: [0,1] to calculate pi. Uses reimann sums. */  
+double pi_approx(unsigned int n);
+
+/* prints the circle s.t. x^2 + y^2 <= radius^2.*/ 
+void circle(unsigned int radius);
+
+/* prints a matrix of triangles given their height, num of rows and cols in matrix. */ 
+void triangles(unsigned int rows, unsigned int cols, unsigned int tri_height);
+
+/* Given numerator n and denominator d, gives the quotient q and remainder r as out parameters. */ 
+void int_div(unsigned int n, unsigned int d, unsigned int* q, unsigned int* r); 

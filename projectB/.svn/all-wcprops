@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/karljiang-cs152-win-16/!svn/ver/136/projectB
+END
+color.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/color.c
+END
+hit_test.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/hit_test.c
+END
+rt.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/karljiang-cs152-win-16/!svn/ver/87/projectB/rt.c
+END
+sphere.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/sphere.c
+END
+camera.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/camera.c
+END
+xyz.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/xyz.c
+END
+ray.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/ray.c
+END
+feedback-projB.txt
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/karljiang-cs152-win-16/!svn/ver/136/projectB/feedback-projB.txt
+END
+raytracer.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/88/projectB/raytracer.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/70/projectB/Makefile
+END
+scene.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/scene.c
+END
+intersect.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/84/projectB/intersect.c
+END
+texture.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/karljiang-cs152-win-16/!svn/ver/89/projectB/texture.c
+END
+raytracer.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/88/projectB/raytracer.h
+END
+stage.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/karljiang-cs152-win-16/!svn/ver/89/projectB/stage.c
+END
+obj_list.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/obj_list.c
+END
+object.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/object.c
+END
+light.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/light.c
+END
+poster.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/83/projectB/poster.c
+END

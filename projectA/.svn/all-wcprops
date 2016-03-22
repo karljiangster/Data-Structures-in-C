@@ -1,0 +1,191 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/karljiang-cs152-win-16/!svn/ver/119/projectA
+END
+xyz.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/karljiang-cs152-win-16/!svn/ver/65/projectA/xyz.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/65/projectA/Makefile
+END
+ev_objlist.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/karljiang-cs152-win-16/!svn/ver/58/projectA/ev_objlist.c
+END
+obj_list.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/karljiang-cs152-win-16/!svn/ver/59/projectA/obj_list.c
+END
+ev_poster.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/57/projectA/ev_poster.c
+END
+ev_color.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/karljiang-cs152-win-16/!svn/ver/52/projectA/ev_color.c
+END
+poster.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/62/projectA/poster.c
+END
+color.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/karljiang-cs152-win-16/!svn/ver/68/projectA/color.c
+END
+ev_sphere.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/57/projectA/ev_sphere.c
+END
+ev_camera.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/60/projectA/ev_camera.c
+END
+rt.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/karljiang-cs152-win-16/!svn/ver/68/projectA/rt.c
+END
+ev_ray.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/62/projectA/ev_ray.c
+END
+sphere.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/62/projectA/sphere.c
+END
+ev_scene.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/karljiang-cs152-win-16/!svn/ver/59/projectA/ev_scene.c
+END
+camera.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/65/projectA/camera.c
+END
+feedback-projA.txt
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/karljiang-cs152-win-16/!svn/ver/119/projectA/feedback-projA.txt
+END
+ev_intersect.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/karljiang-cs152-win-16/!svn/ver/63/projectA/ev_intersect.c
+END
+ev_texture.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/karljiang-cs152-win-16/!svn/ver/65/projectA/ev_texture.c
+END
+ray.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/karljiang-cs152-win-16/!svn/ver/63/projectA/ray.c
+END
+raytracer.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/68/projectA/raytracer.c
+END
+scene.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/karljiang-cs152-win-16/!svn/ver/59/projectA/scene.c
+END
+ev_stage.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/karljiang-cs152-win-16/!svn/ver/60/projectA/ev_stage.c
+END
+texture.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/karljiang-cs152-win-16/!svn/ver/65/projectA/texture.c
+END
+intersect.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/68/projectA/intersect.c
+END
+ev_object.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/58/projectA/ev_object.c
+END
+raytracer.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/karljiang-cs152-win-16/!svn/ver/68/projectA/raytracer.h
+END
+stage.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/karljiang-cs152-win-16/!svn/ver/60/projectA/stage.c
+END
+object.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/68/projectA/object.c
+END
+ev_hit_test.c
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/karljiang-cs152-win-16/!svn/ver/62/projectA/ev_hit_test.c
+END
+hit_test.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/karljiang-cs152-win-16/!svn/ver/62/projectA/hit_test.c
+END
+ev_xyz.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/karljiang-cs152-win-16/!svn/ver/65/projectA/ev_xyz.c
+END

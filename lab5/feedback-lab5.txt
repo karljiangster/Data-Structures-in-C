@@ -1,0 +1,736 @@
+;; Lab Guideline
+
+;; _total-score_                    98 / 100
+
+;; ====== correctness
+
+;; === xyz ===
+;; xyz_new				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not initialize variable ? correctly
+
+;; xyz_dup				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not initialize variable ? correctly
+
+;; xyz_add				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+
+;; xyz_sub				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+
+;; xyz_neg				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+
+;; xyz_scale				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+
+;; xyz_dot				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+
+;; xyz_mag				/ 3
+
+;; xyz_norm				/ 4
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+-1 - did not check for when magnitude is 0 and handle properly
+
+;; xyz_tos				/ 2
+-1 - did not allocate new string on the heap
+
+;; xyz_print			1 / 2
+memory leak
+
+;; xyz_subtotal:		31 / 32
+
+;; === color ===
+;; color_new				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not initialize variable ? correctly
+
+;; color_dup				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not initialize variable ? correctly
+
+;; color_modulate			/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+
+;; color_scale				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+-1 - allowed answer to leave [0,1] range
+
+;; color_add				/ 3
+-1 - did not allocate new struct on the heap
+-1 - did not set variable ? correctly
+-1 - allowed answer to leave [0,1] range
+
+;; color_tos				/ 2
+-1 - did not allocate new string on the heap
+
+;; color_print			1/ 2
+memory leak
+
+;; color_print_bytes			/ 3
+-1 - improper formatting
+-1 - incorrect translation
+
+;; color_subtotal:		21 / 22
+
+;; === colorlist ===
+;; cl_cons				/ 4
+-1 - did not allocate from heap
+-1 - did not put in color properly
+-1 - did not hook to list
+
+;; cl_length				/ 4
+
+;; cl_max_red				/ 4
+-1 - did not raise error
+
+;; cl_print				/ 2
+
+;; cl_free				/ 4
+-2 - freed only first element
+-1 - freed everything but not safely
+
+;; colorlist_subtotal		18 / 18
+
+;; correctness_subtotal		70 / 72
+
+;; === style ===
+
+;; development process		     / 10
+-4 - compiled properly with their own files
+-4 - functions are complete and in the appropriate files
+-4 - using subversion correctly		
+-10 - required editing their code (to do more than problems above)
+(take off no more than 10)
+
+;; adequate tests                     / 5
+(no helper function tests necessary)
+(tests should be modularized)
+
+;; well-written purposes              / 2
+;; proper indentation, line breaks    / 2
+;; well-named variables		      / 2
+;; well-chosen types		      / 2
+
+;; === efficiency ===
+;; make sure to grade their test code for efficiency, as well
+;; well-chosen control structures     / 5
+(no blatant inefficiencies or confusing control)
+
+;; style _subtotal_:		   28 / 28
+
+
+;; graded by Liwen Zhang
+
+======== color.c ========
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "color.h" 
+
+/* checks if each input is in the interval [0, 1]. throws error */ 
+void _in_range(double r, double g, double b) { 
+    
+    double inputs [] = {r, g, b}; 
+    for(int i = 0; i < 3; ++i) { 
+	if(inputs[i] < 0 || inputs[i] > 1) { 
+	    fprintf(stderr, "Inputs outside interval"); 
+	    exit(1);   
+	} 	    
+    } 
+} 
+
+/* enforce that each value is on interval [0,1] */
+color *color_new(double r, double g, double b) { 
+
+    _in_range(r, g, b); 
+    color* new = (color*) malloc( sizeof(color) ); 
+    new -> r = r; 
+    new -> g = g; 
+    new -> b = b; 
+    return new; 
+} 
+
+/* creates a duplicate of the given color */
+color *color_dup(color *c) { 
+    return color_new(c -> r, c -> g, c -> b); 
+} 
+
+/* multiply the components of two colors */
+color *color_modulate(color *c1, color *c2) { 
+    return color_new(c1 -> r * c2 -> r, c1 -> g * c2 -> g, 
+	    c1 -> b * c2 -> b);
+} 
+
+/* pushes the given double to 0 or 1 if ![0,1], whichever is closer */ 
+double _force(double d) { 
+
+    if(d < 0) 
+	return 0; 
+    if(d > 1) 
+	return 1; 
+    return d; 
+} 
+
+/* scale each component by given scalar */
+color *color_scale(double s, color *c) {
+     
+    return color_new(_force(s * c -> r), 
+	    _force(s * c -> g), _force(s * c -> b) ); 
+} 
+
+/* add components of colors */
+color *color_add(color *c1, color *c2) { 
+    return color_new(_force(c1 -> r + c2 -> r), 
+		_force(c1 -> g + c2 -> g), 
+		_force(c1 -> b + c2 -> b) ); 
+} 
+
+/* produce a string representation of a color */
+char *color_tos(color *c) { 
+
+    char buf[50]; 
+    sprintf(buf, "(%.3f, %.3f, %.3f)", c -> r, c -> g, c -> b); 
+    return strdup(buf); 
+} 
+
+/* prints the contents of color to the console. */
+void color_print(color *c) { 
+    printf("%s", color_tos(c) ); 
+// grader: memory leak -- need to free the string returned by color_tos.
+} 
+
+
+/* scales on interval [0, 255]. Assumes d is on [0, 1] */ 
+int _byte_val(double d) { 
+    return (int) (d * 255); 
+} 
+
+/* print three integer values on [0,255]. */
+void color_print_bytes(color *c) { 
+    printf("%d %d %d", _byte_val(c -> r), 
+		    _byte_val(c -> g), 
+		    _byte_val(c -> b) ); 
+} 
+
+
+ 
+ 
+======== color.h ========
+#ifndef COLOR_H
+#define COLOR_H
+
+/* General struct for color */ 
+typedef struct color {
+        /* each value must be on interval [0,1] */
+    double r;
+    double g;
+    double b;
+} color;
+
+/* === color operations === */
+
+/* enforce that each value is on interval [0,1] */
+color *color_new(double r, double g, double b);
+
+/* creates a duplicate of the given color */
+color *color_dup(color *c);
+
+/* multiply the components of two colors */
+color *color_modulate(color *c1, color *c2);
+
+/* scale each component by given scalar */
+color *color_scale(double s, color *c);
+
+/* add components of colors */
+color *color_add(color *c1, color *c2);
+
+/* produce a string representation of a color */
+char *color_tos(color *c);
+
+/* prints the contents of color to the console. */
+void color_print(color *c);
+
+ /* print three integer values on [0,255]. */
+void color_print_bytes(color *c);
+
+#endif
+ 
+ 
+======== colorlist.c ========
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "colorlist.h" 
+#include "color.h" 
+
+/* note: must allocate a new struct on the heap */
+colorlist *cl_cons(color *c, colorlist *cs) { 
+
+    colorlist* new = (colorlist*) malloc( sizeof(colorlist) ); 
+    new -> c = *c; 
+    new -> next = cs; 
+    return new; 
+} 
+
+
+/* returns the length of the entire colorlist */ 
+unsigned int cl_length(colorlist *cs) { 
+    
+    unsigned int length = 0; 
+    colorlist* tmp; 
+
+    for(tmp = cs; tmp != NULL; tmp = tmp -> next) { 
+	length++; 
+    } 
+    return length; 
+}
+
+
+/* return the maximum red component of all colors */
+double cl_max_red(colorlist *cs) { 
+
+    colorlist* tmp = cs; 
+    if(!tmp) { 
+	fprintf(stderr, "Empty colorlist"); 
+	exit(1); 
+    } 
+
+    double max_red = tmp -> c.r; 
+
+    for(tmp = cs; tmp != NULL; tmp = tmp -> next) { 
+	if(tmp -> c.r > max_red) 
+	    max_red = tmp -> c.r; 
+    } 
+
+    return max_red; 
+        
+} 
+
+
+/* prints contents of colorlist */ 
+void cl_print(colorlist *cs) { 
+
+    colorlist* tmp; 
+    for(tmp = cs; tmp != NULL; tmp = tmp -> next) { 
+	color_print( &(tmp -> c) ); 
+	puts(" "); 
+    } 
+}
+
+/* frees the colorlist */
+void cl_free(colorlist *cs) { 
+    
+    colorlist* tmp = cs; 
+    while(tmp) { 
+	colorlist* will_die = tmp; 
+	tmp = tmp -> next; 
+	free(will_die); 
+    } 
+    	
+} 
+
+
+
+ 
+ 
+======== colorlist.h ========
+#ifndef colorlist_h
+#define colorlist_h
+#include "color.h" 
+
+/* struct for colorlist*/ 
+typedef struct colorlist colorlist;
+struct colorlist {
+    color c;
+    colorlist *next;
+};
+
+/* note: must allocate a new struct on the heap */
+colorlist *cl_cons(color *c, colorlist *cs);
+
+/* returns the length of the entire colorlist */ 
+unsigned int cl_length(colorlist *cs);
+
+/* return the maximum red component of all colors */
+double cl_max_red(colorlist *cs);
+
+/* prints contents of colorlist */ 
+void cl_print(colorlist *cs);
+
+/* frees the colorlist */ 
+void cl_free(colorlist *cs);
+
+#endif
+ 
+ 
+======== ev_color.c ========
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include "color.h" 
+
+/* test the color structs and its functions */ 
+void evidence_color() { 
+
+    printf("TESTING COLOR\n\n"); 
+    
+    /* out of bound test 
+     * color* bad = color_new(1.1, 0.5, 0.2);  
+     * color* bad2 = color_new(-0.2, 0.5, 0.2);    
+     */ 
+
+    color* colors [3]; 
+    colors[0] = color_new(0, 0, 0); 
+    colors[1] = color_new(0.5, 0.5, 0.5); 
+    colors[2] = color_new(1, 1, 1); 
+
+    for(int i = 0; i < 3; ++i) { 
+	color_print( colors[i] ); //tests tostring at same time
+	puts(" "); 	
+    }
+    puts(" "); 
+
+    color* dups [3]; 
+    for(int i = 0; i < 3; ++i) { 
+	dups[i] = color_dup( colors[i] ); 
+	color_print( dups[i] ); 
+	puts(" "); 
+    }
+
+    color* mod = color_modulate(colors[0], colors[1] ); 
+    color_print(mod); 
+    puts(" "); 
+
+    color* s1 = color_scale(-2.5, colors[1] ); 
+    printf("expected: (0, 0, 0) \t| actual: "); 
+    color_print(s1);
+    puts(" ");  
+    color* s2 = color_scale(100, colors[2] ); 
+    printf("expected: (1, 1, 1) \t| actual: "); 
+    color_print(s2);
+    puts(" ");  
+    color* s3 = color_scale(0.5, colors[1] ); 
+    printf("expected: (0.25, 0.25, 0.25) \t| actual: "); 
+    color_print(s3);
+    puts(" "); 
+
+    color* add1 = color_add(colors[0], colors[1]); 
+    printf("expected: (0.5, 0.5, 0.5) \t| actual: "); 
+    color_print(add1); 
+    puts(" ");     
+    color* add2 = color_add(colors[1], colors[2]); 
+    printf("expected: (1, 1, 1) \t| actual: "); 
+    color_print(add2); 
+    puts(" ");    
+
+    for(int i = 0; i < 3; ++i) { 
+	color_print_bytes( colors[i] ); 
+	puts(" "); 	
+    } 
+} 
+
+
+int main() { 
+    evidence_color(); 
+    return 0; 
+} 
+ 
+ 
+======== ev_colorlist.c ========
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include "colorlist.h" 
+
+/* test the colorlist structs and its functions */ 
+void evidence_colorlist() { 
+
+    printf("TESTING COLORLIST\n\n"); 
+
+    int size = 6; 
+    color* colors [6]; 
+    double param = 0.2; 
+    for(int i = 0; i < size; ++i) { 
+	colors[i] = color_new(i * param, i * param, i * param); 
+    } 
+
+    colorlist* cl = cl_cons( colors[0], NULL);
+    colorlist* tmp = cl; 	
+    for(int i = 1; i < 6; ++i) { 
+	tmp -> next = cl_cons( colors[i], NULL); 
+	tmp = tmp -> next; 
+    }
+
+    cl_print(cl); 
+
+    printf("expected length: 6\t|actual: %d\n", cl_length(cl) );  
+    printf("expected max red: 1.000\t|actual: %.3f\n", cl_max_red(cl) ); 
+    
+    //test null cl
+    colorlist* nada = NULL; 
+    printf("expected length: 0\t|actual: %d\n", cl_length(nada) ); 
+
+    cl_max_red(nada);  
+
+} 
+
+
+int main() { 
+    evidence_colorlist(); 
+    return 0; 
+} 
+ 
+ 
+======== ev_xyz.c ========
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "xyz.h" 
+
+/* test the xyz structs and its functions */ 
+void evidence_xyz() { 
+
+    printf("TESTING XYZ\n\n"); 
+
+    xyz* test_a = xyz_new(1, 1, 1); 
+    xyz* test_b = xyz_new(-1, 1, 1); 
+    xyz* test_c = xyz_new(0, 0, 0); 
+
+    printf("expected: (1, 1, 1) \t| actual: "); 
+    xyz_print(test_a); //used xyz_tos in xyz_print, so we test that too
+    puts(" "); 
+
+    xyz* c_dup = xyz_dup(test_c); 
+    printf("expected: (0, 0, 0) \t| actual: "); 
+    xyz_print(c_dup); 
+    puts(" "); 
+    
+    xyz* a_b = xyz_add(test_a, test_b); 
+    printf("expected: (0, 2, 2) \t| actual: "); 
+    xyz_print(a_b); 
+    puts(" "); 
+
+    xyz* a_b_sub = xyz_sub(test_a, test_b); 
+    printf("expected: (2, 0, 0) \t| actual: "); 
+    xyz_print(a_b_sub); 
+    puts(" "); 
+
+    xyz* b_neg = xyz_neg(test_b); 
+    printf("expected: (1, -1, -1) \t| actual: "); 
+    xyz_print(b_neg); 
+    puts(" "); 
+
+    double dot_ab = xyz_dot(test_a, test_b); 
+    double dot_bc = xyz_dot(test_b, test_c); 
+    printf("expected: A dot B = 1, B dot C = 0\t actual: %3f | %3f)",
+	dot_ab, dot_bc); 
+    puts(" "); 
+
+    double mag_a = xyz_mag(test_a); 
+    printf("expected: %3f \t| actual: %3f", sqrt(3), mag_a);   
+    puts(" "); 
+
+    xyz* norm_a = xyz_norm(test_a); 
+    xyz* norm_c = xyz_norm(test_c); 
+    xyz_print(norm_a); 
+    puts(" "); 
+    xyz_print(norm_c); //just do a visual inspection here 
+
+    puts(" "); 
+} 
+
+
+int main() { 
+    evidence_xyz(); 
+    return 0; 
+} 
+ 
+ 
+======== Makefile ========
+#  Makefile for Lab 5, CMSC 15200, Feb 2016
+
+xyz: xyz.h xyz.c ev_xyz.c
+		clang -lm -g -Wall -o ev_xyz xyz.c ev_xyz.c
+
+color: color.h color.c ev_color.c
+		clang -lm -g -Wall -o ev_color color.c ev_color.c
+
+colorlist: color.h color.c colorlist.h colorlist.c ev_colorlist.c
+		clang -lm -g -Wall -o ev_colorlist color.c colorlist.c ev_colorlist.c
+ 
+ 
+======== xyz.c ========
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "xyz.h" 
+
+/* create new vector with given parameters */ 
+xyz *xyz_new(double x, double y, double z) { 
+    
+    xyz* new = (xyz*) malloc( sizeof(xyz) ); 
+    new -> x = x; 
+    new -> y = y; 
+    new -> z = z; 
+    return new; 
+
+} 
+
+/* create a fresh vector with same components as argument */
+xyz *xyz_dup(xyz *v) { 
+   return xyz_new(v -> x, v -> y, v -> z);  
+} 
+
+/* add two vectors */
+xyz *xyz_add(xyz *v1, xyz *v2) { 
+
+    return xyz_new(v1 -> x + v2 -> x, v1 -> y + v2 -> y, 
+	    v1 -> z + v2 -> z); 
+} 
+
+/* subtract the second vector from the first */
+xyz *xyz_sub(xyz *v1, xyz *v2) { 
+    
+     return xyz_new(v1 -> x - v2 -> x, v1 -> y - v2 -> y, 
+	    v1 -> z - v2 -> z); 
+}
+
+/* scale the components of a vector by scalar s */
+xyz *xyz_scale(double s, xyz *v) { 
+
+    return xyz_new(s * v -> x, s * v -> y, s * v -> z);  
+} 
+
+/* negate a vector */
+xyz *xyz_neg(xyz *v) { 	
+
+    return xyz_scale(-1, v);  
+}
+
+/* compute the dot product of two vectors */
+double xyz_dot(xyz *v1, xyz *v2) { 
+
+    int sum_x = v1 -> x * v2 -> x; 
+    int sum_y = v1 -> y * v2 -> y; 
+    int sum_z = v1 -> z * v2 -> z; 
+    return sum_x + sum_y + sum_z;  
+
+} 
+
+
+/* compute the magnitude of a vector */
+double xyz_mag(xyz *v) { 
+
+    double dot = xyz_dot(v, v);
+    return sqrt(dot);  
+}
+
+/* normalize the vector */
+xyz *xyz_norm(xyz *v) { 
+    
+    double mag = xyz_mag(v); 
+    if(mag == 0) 
+	return v; 
+    return xyz_scale(1/mag, v); 
+} 
+
+/* produce a string representation of a vector */
+char *xyz_tos(xyz *v) { 
+    
+    char buf[50]; 
+    sprintf(buf, "(%.3f, %.3f, %.3f)", v -> x, v -> y, v -> z); 
+    return strdup(buf);  
+} 
+
+/* print the string representation of a vector */
+void xyz_print(xyz *v) { 
+
+    printf("%s", xyz_tos(v) ); 
+// grader: memory leak -- need to free the string returned by xyz_tos.
+}
+ 
+ 
+======== xyz.h ========
+/* struct for a vector in 3d space */ 
+typedef struct xyz {
+    double x;
+    double y;
+    double z;
+} xyz;
+
+/* === vector operations === */
+
+/* create new vector with given parameters */ 
+xyz *xyz_new(double x, double y, double z);
+
+/* create a fresh vector with same components as argument */
+xyz *xyz_dup(xyz *v);
+
+/* add two vectors */
+xyz *xyz_add(xyz *v1, xyz *v2);
+
+/* subtract the second vector from the first */
+xyz *xyz_sub(xyz *v1, xyz *v2);
+
+/* negate a vector */
+xyz *xyz_neg(xyz *v);
+
+/* scale the components of a vector by scalar s */
+xyz *xyz_scale(double s, xyz *v);
+
+/* compute the dot product of two vectors */
+double xyz_dot(xyz *v1, xyz *v2);
+
+/* compute the magnitude of a vector */
+double xyz_mag(xyz *v);
+
+/* normalize the vector */
+xyz *xyz_norm(xyz *v);
+
+/* produce a string representation of a vector */
+char *xyz_tos(xyz *v);
+
+/* print the string representation of a vector */
+void xyz_print(xyz *v); 
+
+ 
+ 

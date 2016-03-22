@@ -1,0 +1,84 @@
+_total score_ 90 / 100 
+
+;; === correctness ===
+
+;; === correctness ===
+;; === bst ===
+;; bst_singleton				4/4
+
+;; bst_insert					10/10
+2/2 - insert to empty tree
+2/2 - insert smaller than root
+2/2 - insert larger than root
+2/2 - complex insert 1
+2/2 - complex insert 2
+
+;; bst_num_entries          8/10
+0/2 - empty tree
+4/4 - tree with 1 node
+4/4 - tree with many nodes
+
+;; bst_height					8/10
+0/2 - empty tree
+2/2 - tree with 1 node
+4/4 - symmetric tree with 9 nodes
+2/2 - asymmetric tree
+
+;; bst_search					10/10
+2/2 - empty tree
+2/2 - found in root
+2/2 - found in right child of left subtree
+2/2 - found in left child of right subtree
+2/2 - not found
+
+;; bst_c					10/10
+2/2 - prints out when item is in root
+2/2 - works on letter not present in tree
+2/2 - works for items smaller than root
+2/2 - works on items smaller than root
+2/2 - works on multiple items on both sides of a node
+
+_automated_subtotal:				50/54
+
+;; graded by Maria Hyun
+;; Lab Guideline
+
+;; ==== correctness graded by style graders
+
+;; bst_free				10 / 10
+
+;; vcard_create				3  / 3
+
+;; vcard_display			3  / 3
+
+;; vcard_free				2  / 2
+
+
+
+;; === style ===
+
+;; development process		     	6 / 10
+-4 - using subversion correctly	have a folder within the lab7 folder and committed extra folders
+
+;; adequate tests                     	5  / 5
+
+
+;; well-written purposes              	2  / 2
+;; proper indentation, line breaks    	0  / 2
+-2 missing many indents
+;; well-named variables		      	2  / 2
+;; well-chosen types		      	2  / 2
+
+;; === efficiency ===
+;; make sure to grade their test code for efficiency, as well
+;; well-chosen control structures     	5  / 5
+
+
+;; style _subtotal_:		    	40 / 46
+
+
+;; graded by Steven
+
+testing if it compiles\n
+make: *** No rule to make target 'adrbook'.  Stop.
+

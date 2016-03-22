@@ -1,0 +1,1648 @@
+;; Project A Guideline
+
+;; _total-score_                    	62/ 100
+
+;; ====== correctness
+
+;; The reason for visual inspection is so that
+;; not everything needs to be exact. Please give
+;; partial credit when appropriate, and don't require
+;; everything to look *exactly* like the reference
+;; picture.
+
+;; === Single posters ===
+;; Single blue poster			3/ 5
+;; Single RGB Gradient Poster		2/ 5
+;; Single Red Gradient Poster		2/ 5
+
+;; === Camera angles ===
+;; Tall poster (ignore color)		2/ 5
+;; High resolution poster (ignore color) 2/ 5
+;; shift camera (ignore color)		2/ 5
+;; poster far away (ignore color)	2/ 5
+
+;; === Single spheres ===
+;; Single blue sphere			5/ 5
+;; Stripes				2/ 5
+;; Colored sphere (does not need to be exact) 1/ 5
+
+;; === Multiple objects ===
+;; Overlapping spheres (ignore color)	2/ 5
+;; Two posters				2/ 5
+;; Hidden poster			2/ 5
+;; Poster behind spheres (ignore color) 3/ 5
+
+;; _correctness_subtotal			32/ 70
+
+;; === style ===
+
+;; development process		     13/ 15
+file light.c missing
+-2 - texture.c incomplete
+
+;; adequate tests                     5/ 5
+(no helper function tests necessary)
+(tests should be modularized)
+
+;; well-written purposes              2/ 2
+;; proper indentation, line breaks    2/ 2
+;; well-named variables		      2/ 2
+
+;; === efficiency ===
+;; well-chosen control structures     4/ 4
+(no blatant inefficiencies or confusing control)
+
+;; _style_subtotal			28/ 30
+
+;; === partial credit ===
+;; If some worked but texture maps didn't:
+;; (if nothing worked, they cannot get these points)
+;; poster_red_distance			2/ 2
+;; poster_rgb_distance			0/ 2
+;; sphere_loc_to_rgb			0/ 2
+;; sphere_horiz_stripes			0/ 2
+
+;; partial_credit _subtotal_: 2/8	 	
+;; note to students: this is only available to
+;; for portions that did not pass correctness testing
+
+
+;; graded by Tatiana
+
+
+
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* create new vector with given parameters */ 
+xyz xyz_expr(double x, double y, double z) { 
+    
+    xyz new = {x, y, z}; 
+    return new; 
+} 
+
+/* create a fresh vector with same components as argument */
+xyz xyz_dup(xyz v) { 
+
+    return xyz_expr(v.x, v.y, v.z);  
+} 
+
+/* add two vectors */
+xyz xyz_add(xyz v1, xyz v2) { 
+
+    return xyz_expr(v1.x + v2.x, v1.y + v2.y, 
+	    v1.z + v2.z); 
+} 
+
+/* subtract the second vector from the first */
+xyz xyz_sub(xyz v1, xyz v2) { 
+    
+     return xyz_expr(v1.x - v2.x, v1.y - v2.y, 
+	    v1.z - v2.z); 
+}
+
+/* scale the components of a vector by scalar s */
+xyz xyz_scale(double s, xyz v) { 
+
+    return xyz_expr(s * v.x, s * v.y, s * v.z);  
+} 
+
+/* negate a vector */
+xyz xyz_neg(xyz v) { 	
+
+    return xyz_scale(-1, v);  
+}
+
+/* compute the dot product of two vectors */
+double xyz_dot(xyz v1, xyz v2) { 
+
+    double sum_x = v1.x * v2.x; 
+    double sum_y = v1.y * v2.y; 
+    double sum_z = v1.z * v2.z; 
+    return sum_x + sum_y + sum_z;  
+
+} 
+
+
+/* compute the magnitude of a vector */
+double xyz_mag(xyz v) { 
+
+    double dot = xyz_dot(v, v);
+    return sqrt(dot);  
+}
+
+
+/* computer the distance between two vetors */ 
+double xyz_dist(xyz v1, xyz v2) { 
+
+    xyz dif = xyz_sub(v2, v1); 
+    return sqrt(dif.x * dif.x + dif.y * dif.y + dif.z * dif.z); 
+
+} 
+
+/* normalize the vector */
+xyz xyz_norm(xyz v) { 
+    
+    double mag = xyz_mag(v); 
+    if(mag == 0) 
+	return v; 
+    return xyz_scale(1/mag, v); 
+} 
+
+/* produce a string representation of a vector */
+char* xyz_tos(xyz v) { 
+    
+    char buf[40]; 
+    sprintf(buf, "(%.3f, %.3f, %.3f)\n", v.x, v.y, v.z); 
+    return strdup(buf);  
+} 
+
+/* print the string representation of a vector to file f */
+void xyz_show(FILE *f, xyz v) { 
+
+    fprintf(f, "%s", xyz_tos(v) ); 
+} 
+
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* checks if each input is in the interval [0, 1]. throws error */ 
+void _in_range(double r, double g, double b) { 
+    
+    double inputs [] = {r, g, b}; 
+    for(int i = 0; i < 3; ++i) { 
+	if(inputs[i] < 0 || inputs[i] > 1) { 
+	    fprintf(stderr, "Inputs outside interval"); 
+	    exit(1);   
+	} 	    
+    } 
+} 
+
+/* enforce that each value is on interval [0,1] */
+color color_expr(double r, double g, double b) { 
+
+    _in_range(r, g, b); 
+    color new = {r, g, b}; 
+    return new; 
+} 
+
+/* creates a duplicate of the given color */
+color color_dup(color c) { 
+    return color_expr(c.r, c.g, c.b); 
+} 
+
+/* multiply the components of two colors */
+color color_modulate(color c1, color c2) { 
+    return color_expr(c1.r * c2.r, c1.g * c2.g, 
+	    c1.b * c2.b);
+} 
+
+/* pushes the given double to 0 or 1 if ![0,1], whichever is closer */ 
+double _force(double d) { 
+
+    if(d < 0) 
+	return 0; 
+    if(d > 1) 
+	return 1; 
+    return d; 
+} 
+
+/* scale each component by given scalar */
+color color_scale(double s, color c) {
+     
+    return color_expr(_force(s * c.r), 
+	    _force(s * c.g), _force(s * c.b) ); 
+} 
+
+/* add components of colors */
+color color_add(color c1, color c2) { 
+    return color_expr(_force(c1.r + c2.r), 
+		_force(c1.g + c2.g), 
+		_force(c1.b + c2.b) ); 
+} 
+
+/* produce a string representation of a color */
+char* color_tos(color c) { 
+
+    char buf[50]; 
+    sprintf(buf, "(%.3f, %.3f, %.3f)", c.r, c.g, c.b); 
+    return strdup(buf); 
+}
+
+/* prints contents of color to file f */
+void color_show(FILE *f, color c) { 
+    
+    fprintf(f, "%s", color_tos(c) ); 
+} 
+
+
+/* scales on interval [0, 255]. Assumes d is on [0, 1] */ 
+int _byte_val(double d) { 
+    return round(d * 255); 
+} 
+
+/* print three integer values on [0,255]. */
+void color_show_bytes(FILE *f, color c) { 
+    fprintf(f, "%d %d %d\n", _byte_val(c.r), 
+		    _byte_val(c.g), 
+		    _byte_val(c.b) ); 
+} 
+
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * ray operations 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* constructor for ray */ 
+ray ray_expr(location origin, direction dir) { 
+
+    ray r; 
+    r.origin = origin; 
+    r.dir = dir; 
+    return r; 
+} 
+
+
+/* ray_position: interpreting direction as velocity, calculate position
+ * of ray r after time t. 
+ */
+xyz ray_position(ray r, double t) { 
+    
+    return xyz_add(r.origin, xyz_scale(t, r.dir) ); 
+} 
+
+
+/* to string for ray */ 
+char *ray_tos(ray r) { 
+    
+    char buf [75]; 
+    sprintf(buf, "RAY: %s + t * %s\n", xyz_tos(r.origin), xyz_tos(r.dir) ); 
+    return strdup(buf); 
+} 
+
+/* prints contents of ray to file f */ 
+void ray_show(FILE *f, ray r) { 
+
+    fprintf(f, "%s", ray_tos(r) ); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * sphere operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* constructs a sphere */
+sphere sphere_expr(location v, double r, color(*sc)(object *,location), 
+	        color sh) { 
+
+    sphere s; 
+    s.center = v; 
+    s.radius = r; 
+    s.surface_color = sc; 
+    s.shine = sh; 
+    return s; 
+} 
+
+/* tostring for sphere */
+char *sphere_tos(sphere s) { 
+    
+    char buf[75]; 
+    sprintf(buf, "SPHERE\n\tcenter: %s\n\tradius: %f\n", 
+		xyz_tos(s.center), s.radius); 
+    return strdup(buf); 
+} 
+
+/* display for sphere */
+void sphere_show(FILE *f, sphere s) { 
+//only going to use stderr for this, 
+//fprintf(f, ..); 0 in any show file. 
+//file *x  = fopen("f.ppm", "w"); 
+    
+    fprintf(f, "%s", sphere_tos(s) ); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * sphere operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* Makes a poster */ 
+poster poster_expr(location ulc, double w, double h, color(*sc)(object*,
+	    location), color sh) { 
+
+    poster l; 
+    l.upper_left = ulc; 
+    l.w = w; 
+    l.h = h; 
+    l.surface_color = sc; 
+    l.shine = sh; 
+    return l; 
+} 
+
+/* to string for poster */ 
+char *poster_tos(poster s) { 
+
+    char buf[75]; 
+    sprintf(buf, "POSTER\n\tulc: %s\n\twidth: %f\n\theight: %f\n", 
+	    xyz_tos(s.upper_left), s.w, s.h); 
+    return strdup(buf); 
+} 
+
+/* print contents to file f */ 
+void poster_show(FILE *f, poster s) { 
+    fprintf(f, "%s", poster_tos(s) ); 
+} 
+
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * object operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* returns color of object at point */ 
+color object_color(object obj, location loc) { 
+    
+    if(obj.tag == SPHERE) 
+	return obj.o.s.surface_color(&obj, loc); 
+    return obj.o.p.surface_color(&obj, loc); 
+
+} 
+
+
+/* expr for object sphere */  
+object obj_sphere(sphere s) { 
+
+    object os; 
+    os.tag = SPHERE; 
+    os.o.s = s; 
+    return os; 
+} 
+
+/* expr for object poster */ 
+object obj_poster(poster p) { 
+
+    object op; 
+    op.tag = POSTER; 
+    op.o.p = p; 
+    return op; 
+} 
+
+/* to string for object */ 
+char *object_tos(object o) { 
+    if(o.tag == POSTER) 
+	return poster_tos(o.o.p);
+    return sphere_tos(o.o.s); 
+} 
+
+/* print contents to file f */ 
+void object_show(FILE *f, object o) { 
+    fprintf(f, "%s", object_tos(o) ); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * object list operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* constructs a object list the heap */
+obj_list *ol_cons(object o, obj_list *os) { 
+
+    obj_list* ol = (obj_list*) malloc(sizeof(obj_list) ); 
+    ol -> obj = o; 
+    ol -> next = os; 
+    return ol; 
+} 
+
+/* returns obj_list with object s and null pointer */
+obj_list *ol_singleton(object s) { 
+
+    return ol_cons(s, NULL); 
+} 
+
+/* returns num of objects ib obj_list */ 
+int _ol_size(obj_list* os) { 
+
+
+    int size = 0; 
+    obj_list* tmp; 
+    for(tmp = os; tmp != NULL; tmp = tmp -> next) { 
+	size++; 
+    } 
+    return size; 
+} 
+/* to string for obj_list */
+char *ol_tos(obj_list *os) { 
+ 
+    int len = _ol_size(os);     
+    char buf [100 * len]; 
+    sprintf(buf, "OBJECTLIST:\n"); 
+
+    obj_list* tmp = os; 
+    for(int i = 0; i < len; ++i) { 
+	char header [20]; 
+	sprintf(header, "\tObject %d\n", i); 
+	strcat(buf, header); 
+	strcat(buf, object_tos(tmp -> obj) );
+		
+	tmp = tmp -> next; 
+    }
+    return strdup(buf);  
+} 
+
+/* prints contents to file */
+void ol_show(FILE *f, obj_list *os) { 
+
+    fprintf(f, "%s", ol_tos(os) ); 
+} 
+
+/* frees the object and its contents */
+void ol_free(obj_list *ss) { 
+
+    obj_list* tmp = ss; 
+    while(tmp != NULL) { 
+	
+	obj_list* willdie = tmp; 
+	tmp = tmp -> next; 
+	free(willdie); 
+    } 
+} 
+
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * scene operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* to string for scene */ 
+char *scene_tos(scene sc) { 
+    
+    char* ol_str = ol_tos(sc.objects); 
+    char* col_str = color_tos(sc.bg); 
+
+    int buf_size = strlen(ol_str) + strlen(col_str); 
+    char buf [buf_size + 50];  
+    sprintf(buf, "SCENE DATA:\n\n"); 
+    strcat(buf, col_str);
+    strcat(buf, "\n"); 
+    strcat(buf, ol_str);    
+   
+    return strdup(buf);  
+} 
+
+/* print contents to file f */ 
+void scene_show(FILE *f, scene sc) { 
+    fprintf(f, "%s", scene_tos(sc) ); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * camera operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* makes new camera with height and width of physical plane, location */ 
+camera camera_expr(unsigned int w, unsigned int h, location loc) { 
+
+    camera cm; 
+    cm.h = h;
+    cm.w = w; 
+    cm.loc = loc; 
+    return cm; 
+} 
+
+
+/* to string for camera */ 
+char *camera_tos(camera cm) { 
+    
+    char buf [75];
+    sprintf(buf, "CAMERA:\nheight: %u\t|width: %u\t|loc: %s\n", 
+	   cm.h, cm.w, xyz_tos(cm.loc) );  
+    return strdup(buf); 
+} 
+
+/* print contents to file f */ 
+void camera_show(FILE *f, camera cm) { 
+    fprintf(f, "%s", camera_tos(cm) ); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * hit_test operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/*expr for hit_test if a miss */ 
+hit_test miss_expr() { 
+
+    hit_test miss; 
+    miss.miss = MISS; 
+    return miss; 
+} 
+
+/* expr for hit_test, provided it hits. Refine in Proj B */ 
+hit_test hit_test_expr(double t, location hit_point) { 
+
+    hit_test ht; 
+    ht.miss = HIT; 
+    ht.t = t; 
+    ht.hit_point = hit_point; 
+    return ht; 
+
+}  
+
+/* to string for hit_test */ 
+char *hit_test_tos(hit_test t) { 
+    
+    if(t.miss == MISS) 
+	return strdup("HIT TEST:\nNO HIT\n\n"); 	
+    char buf [50 * 4]; //2 colors, 2 xyz, all apprx 50 char 
+    sprintf(buf, "HIT TEST:\ntime: %f\t|hit point: %s\n\n", 
+	    t.t, xyz_tos(t.hit_point) );
+
+    return strdup(buf); 
+} 
+
+/* print contents to file f */ 
+void hit_test_show(FILE *f, hit_test t) { 
+    fprintf(f, "%s", hit_test_tos(t) ); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * stage operations
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* to string for stage */ 
+char *stage_tos(stage stg) { 
+    
+    char* scene_str = scene_tos(stg.s); 
+    char* cam_str = camera_tos(stg.c); 
+
+    int buf_size = strlen(scene_str) + strlen(cam_str); 
+    char buf [buf_size + 50];  
+    sprintf(buf, "STAGE DATA:\n\n"); 
+    strcat(buf, scene_str);
+    strcat(buf, "\n"); 
+    strcat(buf, cam_str);    
+   
+    return strdup(buf);  
+} 
+
+/* print contents to file f */ 
+void stage_show(FILE *f, stage stg) { 
+    fprintf(f, "%s", stage_tos(stg) ); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * intersect 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* helper for intersect of object is sphere */ 
+hit_test _sphere_intersect(ray r, sphere s) { 
+
+    location ro = r.origin; 
+    direction rd = xyz_norm(r.dir); 
+    location sc = s.center; 
+    double sr = s.radius; 
+
+    location A = xyz_sub(ro, sc); 
+    double B = xyz_dot(A, rd);
+    double C = xyz_dot(A, A) - sr * sr; 
+    double D = B * B - C; 
+    double t = -B - sqrt(D); 
+
+    if(D <= 0 || t <= 0)  
+	return miss_expr();
+    return hit_test_expr(t, ray_position(r, t) ); 
+
+} 
+
+/* returns true (1) if the ray at time t is within the poster bounds. False otherwise */ 
+int _within_poster_bounds(location position, poster p) { 
+
+   
+    double left_bound = p.upper_left.x; 
+    double right_bound = p.upper_left.x + p.w; 
+    double upper_bound = p.upper_left.y + p.h; 
+    double lower_bound = p.upper_left.y;  
+   
+    if(position.x > left_bound && position.x < right_bound && 
+	    position.y > lower_bound && position.y < upper_bound) { 
+	return 1; 	
+    }
+    return 0; 
+} 
+
+
+/* helper function for hit_test when object is poster */ 
+hit_test _poster_intersect(ray r, poster p) { 
+
+    location ro = r.origin; 
+    direction rd = xyz_norm(r.dir);
+    direction n = xyz_expr(0, 0, -1); 
+    double d = p.upper_left.z;  
+    double t =(xyz_dot(ro, n) + d) / (xyz_dot(rd, n) );
+ 
+    location position = ray_position(r, t);
+  
+    int in_bounds = _within_poster_bounds(position, p);  
+    
+    if(t > 0 && in_bounds == 1) 
+	return hit_test_expr(t, position);  
+    else  
+	return miss_expr(); 
+}  
+
+/* returns hit_test on ray hitting object */ 
+hit_test intersect(ray r, object obj) { 
+
+    if(obj.tag == SPHERE) 
+	return _sphere_intersect(r, obj.o.s) ; 
+    return _poster_intersect(r, obj.o.p); 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * Raytracer logic
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include <float.h> 
+#include "raytracer.h" 
+
+
+/* checks whether the given x and y points are within camera bounds */ 
+void _check_bounds(camera c, unsigned int x, unsigned int y) {
+    
+    if(x < c.w && y < c.h) 
+	return; 
+    fprintf(stderr, "Parameters out of bounds of camera\n."); 
+    exit(1); 
+} 
+
+
+/* given physical coordinates, converts to logical and returns */ 
+location logical_loc(camera c, unsigned int x, unsigned int y) { 
+
+    _check_bounds(c, x, y);
+    double x_crd, y_crd;
+    double width = c.w; 
+    double height = c.h;     
+    double x_w = x; 
+    double y_h = y; 
+
+    if(width > height) { 
+	x_crd = -1 + 1 / width + 2 * x_w / width;
+	y_crd = height / width - 1 / width - 2 * y_h / width; 
+    }
+    else {  	
+	x_crd = -width / height + 1 / height + 2 * x_w / height; 
+    	y_crd = 1 - 1 / height - 2 * y_h / height; 
+    } 
+
+    return xyz_expr(x_crd, y_crd, 0); 
+} 
+
+
+/* follow a ray from the camera into a scene, test for intersections 
+ * with any spheres objects and find either the closest intersection 
+ * or miss, use the surface_color function to compute the color.
+ */ 
+color trace_ray(scene s, ray r) { 
+    color ans = s.bg;
+    double t = DBL_MAX; //max double 1.7E+308 
+    for(obj_list* objs = s.objects; objs != NULL; objs = objs -> next) { 
+	
+	hit_test hit = intersect(r, objs -> obj); 
+	if(hit.miss == HIT && hit.t < t) { 
+	    t = hit.t; 
+	    ans = object_color(objs -> obj, hit.hit_point);  
+	} 
+    } 
+
+    return ans; 
+
+} 
+
+
+/* run trace_ray over all rays though each pixel in the image, 
+ * compute the color corresponding to each ray, and write an 
+ * image, pixel by pixel, to the file pointed to by f.
+ */ 
+void render(FILE *f, stage g) { 
+
+    fprintf(f, "P3\n%d %d\n255\n", g.c.h, g.c.w);
+    for(unsigned int y = 0; y < g.c.h; ++y) { 
+	for(unsigned int x = 0; x < g.c.w; ++x) { 
+	    direction dir = xyz_sub(logical_loc(g.c, x, y),  g.c.loc); 
+	    color col = trace_ray(g.s, ray_expr(g.c.loc, dir) ); 
+	    color_show_bytes(f, col); 
+	} 
+    }
+} 
+
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* test the logical loc  and its functions */ 
+void evidence_logical_loc() { 
+
+    printf("TESTING LOGICAL LOC\n\n"); 
+    
+    camera cm0 = camera_expr(10, 10, xyz_expr(0, 0, -5) ); 
+    location ulc_0 = logical_loc(cm0, 0, 0); 
+    location lrc_0 = logical_loc(cm0, 9, 9); 
+    xyz_show(stderr, ulc_0); 
+    xyz_show(stderr, lrc_0); 
+    puts(" "); 
+    
+    camera cm1 = camera_expr(30, 20, xyz_expr(0, 0, -5) ); 
+    location ulc_1 = logical_loc(cm1, 0, 0); 
+    location ulc1_1 = logical_loc(cm1, 1, 0); 
+    location lrc_1 = logical_loc(cm1, 29, 19); 
+    xyz_show(stderr, ulc_1); 
+    xyz_show(stderr, ulc1_1); 
+    xyz_show(stderr, lrc_1); 
+    puts(" "); 
+
+    camera cm2 = camera_expr(10, 14, xyz_expr(0, 0, -5) ); 
+    location ulc_2 = logical_loc(cm2, 0, 0); 
+    location lrc_2 = logical_loc(cm2, 9, 13); 
+    location llc_2 = logical_loc(cm2, 0, 13); 
+    xyz_show(stderr, ulc_2); 
+    xyz_show(stderr, lrc_2); 
+    xyz_show(stderr, llc_2); 
+    puts(" "); 
+
+}
+
+
+/* sc_blue : surface color function that returns blue, always */
+color sc_blue(object *o, location loc)
+{
+    return color_expr(0,0,1);
+}
+
+
+int main(int argc, char *argv[]) { 
+
+    //evidence_logical_loc(); 
+    stage g; 
+    g.c = camera_expr(300, 300, xyz_expr(0, 0, -5) ); 
+    sphere s = sphere_expr(xyz_expr(0, 0, 3), 1, sc_blue, 
+	   color_expr(0, 0, 0) );  
+ 
+    obj_list* objs = ol_singleton(obj_sphere(s) );  
+    g.s.objects = objs; 
+    g.s.bg = color_expr(0, 0, 0);  
+
+    FILE *f = fopen("evidence.ppm", "w"); 
+    render(f, g); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * Texture operations 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* sc_blue : surface color function that returns blue, always */
+color sc_blue(object *o, location loc)
+{
+      return color_expr(0,0,1);
+}
+
+/* poster_red_distance - calculate distance from upper-left-corner, use to 
+ * scale from black at upper-left to red at lower-right
+ */
+color poster_red_distance(object *o, location loc) { 
+    
+    poster p = o -> o.p; 
+    xyz ul = p.upper_left; 
+    xyz lr = xyz_expr(ul.x + p.w, ul.y - p.h, ul.z); 
+   
+    double dist = xyz_dist(loc, ul); 
+    double total_dist = xyz_dist(ul, lr);  
+    return color_expr(dist / total_dist, 0, 0);  
+} 
+
+/* poster_rgb_distance - calculate distance from upper-left-corner, use to 
+ * scale from all red at upper-left to all blue at lower-right, with 
+ * green in the middle, and gradations between them.
+ */
+color poster_rgb_distance(object *o, location loc);
+ 
+ 
+/* sphere_loc_to_rgb - scale the location so that it maps x, y, z onto r, g, b in 
+ * a way that shows gradations in the sphere. You are being given flexibility to 
+ * do this in a way that looks interesting to you.
+ */
+color sphere_loc_to_rgb(object *o, location loc);
+ 
+ 
+/* sphere_stripes - color the sphere with 4 blue stripes on a white background.
+ * the pattern is: WBWBWBWBW. The stripes and background are roughly equal height.
+ */
+color sphere_horiz_stripes(object *o, location loc);
+
+
+
+
+# Makefile (starter)
+# CS152 Winter 2016
+# Project A
+
+.PHONY: clean
+
+xyz: raytracer.h xyz.c ev_xyz.c
+		clang -lm -g -Wall -o ev_xyz xyz.c ev_xyz.c
+
+color: raytracer.h color.c ev_color.c
+		clang -lm -g -Wall -o ev_color color.c ev_color.c
+
+ray: raytracer.h xyz.c ray.c ev_ray.c 
+		clang -lm -g -Wall -o ev_ray xyz.c ray.c ev_ray.c 
+
+sphere: raytracer.h xyz.c color.c sphere.c ev_sphere.c 
+		clang -lm -g -Wall -o ev_sphere xyz.c color.c sphere.c ev_sphere.c 
+
+poster: raytracer.h xyz.c color.c poster.c ev_poster.c 
+		clang -lm -g -Wall -o ev_poster xyz.c color.c poster.c ev_poster.c 
+
+object: raytracer.h xyz.c color.c poster.c sphere.c object.c ev_object.c 
+		clang -lm -g -Wall -o ev_object xyz.c color.c poster.c sphere.c object.c ev_object.c 
+
+obj_list: raytracer.h xyz.c color.c poster.c sphere.c object.c obj_list.c ev_objlist.c 
+	clang -lm -g -Wall -o ev_obj_list xyz.c color.c poster.c sphere.c object.c obj_list.c ev_objlist.c 
+
+scene: raytracer.h xyz.c color.c poster.c sphere.c object.c obj_list.c scene.c ev_scene.c 
+	clang -lm -g -Wall -o ev_scene xyz.c color.c poster.c sphere.c object.c obj_list.c scene.c ev_scene.c 
+
+hit_test: raytracer.h xyz.c color.c hit_test.c ev_hit_test.c
+	clang -lm -g -Wall -o ev_hit_test xyz.c color.c hit_test.c ev_hit_test.c 
+
+camera: raytracer.h xyz.c camera.c ev_camera.c 
+	clang -lm -g -Wall -o ev_camera xyz.c camera.c ev_camera.c 
+
+stage: raytracer.h xyz.c color.c poster.c sphere.c object.c obj_list.c scene.c camera.c stage.c ev_stage.c  
+	clang -lm -g -Wall -o ev_stage xyz.c color.c poster.c sphere.c object.c obj_list.c scene.c camera.c stage.c ev_stage.c 
+
+intersect: raytracer.h xyz.c color.c ray.c poster.c sphere.c object.c hit_test.c intersect.c ev_intersect.c 
+	clang -lm -g -Wall -o ev_intersect xyz.c color.c ray.c poster.c sphere.c object.c hit_test.c intersect.c ev_intersect.c 
+
+texture: raytracer.h xyz.c color.c ray.c poster.c sphere.c object.c texture.c ev_texture.c  
+	clang -lm -g -Wall -o ev_texture xyz.c color.c ray.c poster.c sphere.c object.c texture.c ev_texture.c  
+
+raytracer: raytracer.h xyz.c color.c ray.c sphere.c poster.c object.c obj_list.c scene.c camera.c hit_test.c stage.c intersect.c raytracer.c rt.c
+	clang -lm -g -Wall -o ev_rt xyz.c color.c ray.c sphere.c poster.c object.c obj_list.c scene.c camera.c hit_test.c stage.c intersect.c raytracer.c rt.c
+
+SRC = xyz.c color.c ray.c sphere.c poster.c object.c obj_list.c scene.c light.c camera.c hit_test.c stage.c intersect.c raytracer.c rt.c texture.c
+
+trace: raytracer.h $(SRC)
+	clang -g -O3 -Wall -o rt $(SRC) -lm
+
+clean:
+	rm -rf rt *.dSYM *.ppm
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* test the xyz structs and its functions */ 
+void evidence_xyz() { 
+
+    printf("TESTING XYZ\n\n"); 
+
+    xyz test_a = xyz_expr(1, 1, 1); 
+    printf("z: %f\n", test_a.z); 
+    xyz test_b = xyz_expr(-1, 1, 1); 
+    xyz test_c = xyz_expr(0, 0, 0); 
+
+    printf("expected: (1, 1, 1) \t| actual: "); 
+    xyz_show(stdout, test_a);
+    puts(" "); 
+
+    xyz c_dup = xyz_dup(test_c); 
+    printf("expected: (0, 0, 0) \t| actual: "); 
+    xyz_show(stdout, c_dup); 
+    puts(" "); 
+    
+    xyz a_b = xyz_add(test_a, test_b); 
+    printf("expected: (0, 2, 2) \t| actual: "); 
+    xyz_show(stdout, a_b); 
+    puts(" "); 
+
+    xyz a_b_sub = xyz_sub(test_a, test_b); 
+    printf("expected: (2, 0, 0) \t| actual: "); 
+    xyz_show(stdout, a_b_sub); 
+    puts(" "); 
+
+    xyz b_neg = xyz_neg(test_b); 
+    printf("expected: (1, -1, -1) \t| actual: "); 
+    xyz_show(stdout, b_neg); 
+    puts(" "); 
+
+    double dot_ab = xyz_dot(test_a, test_b); 
+    double dot_bc = xyz_dot(test_b, test_c); 
+    printf("expected: A dot B = 1, B dot C = 0\t actual: %3f | %3f)",
+	dot_ab, dot_bc); 
+    puts(" "); 
+
+    double mag_a = xyz_mag(test_a); 
+    printf("expected: %3f \t| actual: %3f", sqrt(3), mag_a);   
+    puts(" "); 
+
+    xyz norm_a = xyz_norm(test_a); 
+    xyz norm_c = xyz_norm(test_c); 
+    xyz_show(stdout, norm_a); 
+    puts(" "); 
+    xyz_show(stdout, norm_c); //just do a visual inspection here 
+
+    xyz test_d = xyz_expr(-1, -1, -1); 
+    double dist = xyz_dist(test_a, test_d); 
+    printf("dist: %f\n", dist); 
+} 
+
+
+int main() { 
+    evidence_xyz(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include "raytracer.h" 
+
+/* test the color structs and its functions */ 
+void evidence_color() { 
+
+    printf("TESTING COLOR\n\n"); 
+    
+    /* out of bound test 
+     * color bad = color_expr(1.1, 0.5, 0.2);  
+     * color bad2 = color_expr(-0.2, 0.5, 0.2);    
+     */ 
+
+    color colors [3]; 
+    colors[0] = color_expr(0, 0, 0); 
+    colors[1] = color_expr(0.5, 0.5, 0.5); 
+    colors[2] = color_expr(1, 1, 1); 
+
+    for(int i = 0; i < 3; ++i) { 
+	color_print( colors[i] ); //tests tostring at same time
+	puts(" "); 	
+    }
+    puts(" "); 
+
+    color dups [3]; 
+    for(int i = 0; i < 3; ++i) { 
+	dups[i] = color_dup( colors[i] ); 
+	color_print( dups[i] ); 
+	puts(" "); 
+    }
+
+    color mod = color_modulate(colors[0], colors[1] ); 
+    color_print(mod); 
+    puts(" "); 
+
+    color s1 = color_scale(-2.5, colors[1] ); 
+    printf("expected: (0, 0, 0) \t| actual: "); 
+    color_print(s1);
+    puts(" ");  
+    color s2 = color_scale(100, colors[2] ); 
+    printf("expected: (1, 1, 1) \t| actual: "); 
+    color_print(s2);
+    puts(" ");  
+    color s3 = color_scale(0.5, colors[1] ); 
+    printf("expected: (0.25, 0.25, 0.25) \t| actual: "); 
+    color_print(s3);
+    puts(" "); 
+
+    color add1 = color_add(colors[0], colors[1]); 
+    printf("expected: (0.5, 0.5, 0.5) \t| actual: "); 
+    color_print(add1); 
+    puts(" ");     
+    color add2 = color_add(colors[1], colors[2]); 
+    printf("expected: (1, 1, 1) \t| actual: "); 
+    color_print(add2); 
+    puts(" ");    
+
+    /* 
+    for(int i = 0; i < 3; ++i) { 
+	color_print_bytes( colors[i] ); 
+	puts(" "); 	
+    } */ 
+} 
+
+
+int main() { 
+    evidence_color(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include "raytracer.h" 
+
+/* test the ray struct and its functions */ 
+void evidence_ray() { 
+
+    printf("TESTING RAY\n\n"); 
+    location origin = xyz_expr(0, 0, 0); 
+    direction dir = xyz_expr(1, 1, 1); 
+    ray r = ray_expr(origin, dir); 
+    printf("%s\n", ray_tos(r) ); 
+
+    printf("%s\n", xyz_tos(ray_position(r, 1) ) ); 
+    ray_show(stdout, r); 
+} 
+
+
+int main() { 
+    evidence_ray(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* some random function to test object pointer */ 
+color sc(object* o, location intersection) { 
+
+       return color_expr(0, 0, 0); 
+} 
+
+
+/* test the sphere struct and its functions */ 
+void evidence_sphere() { 
+
+    printf("TESTING SPHERE\n\n");
+    location v = xyz_expr(0, 0, 0); 
+    double r = 3; 
+    color shine = color_expr(0, 0, 0); 
+    color (*surface_color)(object*, location) = &sc; 
+
+    sphere s = sphere_expr(v, r, surface_color, shine); 
+    sphere_show(stderr, s); 
+
+} 
+
+
+int main() { 
+    evidence_sphere(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* some random function to test object pointer */ 
+color sc(object* o, location intersection) { 
+
+   return color_expr(0, 0, 0); 
+}  
+/* test the poster struct and its functions */ 
+void evidence_poster() { 
+
+    printf("TESTING POSTER\n\n");
+    xyz ulc = xyz_expr(0, 0, 0); 
+    double w = 1.5, h = 1; 
+    color shine = color_expr(0.1, 0.1, 0.1); 
+    color (*surface_color)(object*, location) = &sc; 
+    
+    poster p = poster_expr(ulc, w, h, surface_color, shine); 
+    poster_show(stdout, p); 
+
+} 
+
+
+int main() { 
+    evidence_poster(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* some random function to test object pointer */ 
+color sc(object* o, location intersection) { 
+
+       return color_expr(0, 0, 0); 
+} 
+
+/* testing object functions */ 
+void evidence_object() { 
+
+    printf("Testing Object\n"); 
+    xyz ulc = xyz_expr(0, 0, 0); 
+    double w = 1.5, h = 1;  
+    color shine = color_expr(0.1, 0.1, 0.1); 
+    color (*surface_color)(object*, location) = &sc; 
+    poster p = poster_expr(ulc, w, h, surface_color, shine); 
+    
+    object o; 
+    o.tag = POSTER;
+    o.o.p = p; 
+    
+    object_show(stderr, o); 
+
+    location v = xyz_expr(0, 0, 0); 
+    double r = 3;  
+    sphere s = sphere_expr(v, r, surface_color, shine);    
+    
+    object os;
+    os.tag = SPHERE; 
+    os.o.s = s; 
+
+    object_show(stderr, os); 
+} 
+
+int main() { 
+
+    evidence_object(); 
+    return 0; 
+} 
+
+ 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* some random function to test object pointer */ 
+color sc(object* o, location intersection) { 
+
+       return color_expr(0, 0, 0); 
+} 
+
+/* testing objectlist functions */ 
+void evidence_objectlist() { 
+
+    printf("Testing Object List\n"); 
+    
+    //parameters for spheres and posters 
+    xyz ulc = xyz_expr(0, 0, 0); 
+    double w = 1.5, h = 1;  
+    color shine = color_expr(0.1, 0.1, 0.1); 
+    color (*surface_color)(object*, location) = &sc; 
+    location v = xyz_expr(0, 0, 0); 
+    double r = 3;  
+    
+    poster p = poster_expr(ulc, w, h, surface_color, shine); 
+    sphere s = sphere_expr(v, r, surface_color, shine);    
+    
+    object op; 
+    op.tag = POSTER;
+    op.o.p = p; 
+
+    object os;
+    os.tag = SPHERE; 
+    os.o.s = s; 
+
+    obj_list* olist = ol_singleton(op); 
+    olist = ol_cons(os, olist); 
+
+    ol_show(stderr, olist); 
+} 
+
+int main() { 
+
+    evidence_objectlist(); 
+    return 0; 
+} 
+
+ 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* some random function to test function pointer */ 
+color sc(object* o, location intersection) { 
+
+       return color_expr(0, 0, 0); 
+} 
+
+/* testing scene functions */ 
+void evidence_scene() { 
+
+    printf("Testing Object List\n"); 
+    
+    //parameters for spheres and posters 
+    xyz ulc = xyz_expr(0, 0, 0); 
+    double w = 1.5, h = 1;  
+    color shine = color_expr(0.1, 0.1, 0.1); 
+    color (*surface_color)(object*, location) = &sc; 
+    location v = xyz_expr(0, 0, 0); 
+    double r = 3;  
+    
+    poster p = poster_expr(ulc, w, h, surface_color, shine); 
+    sphere s = sphere_expr(v, r, surface_color, shine);    
+    
+    object op; 
+    op.tag = POSTER;
+    op.o.p = p; 
+
+    object os;
+    os.tag = SPHERE; 
+    os.o.s = s; 
+
+    obj_list* olist = ol_singleton(op); 
+    olist = ol_cons(os, olist); 
+
+    scene sc; 
+    sc.objects = olist; 
+    sc.bg = color_expr(0, 0, 0); 
+    
+    scene_show(stderr, sc); 
+} 
+
+int main() { 
+
+    evidence_scene(); 
+    return 0; 
+} 
+
+ 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* test the camera structs and its functions */ 
+void evidence_camera() { 
+
+    printf("TESTING CAMERA\n\n"); 
+
+    camera cm = camera_expr(20, 30, xyz_expr(1, 1, 1) ); 
+    camera_show(stderr, cm);     
+}
+
+
+int main() { 
+    evidence_camera(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* test the hit test structs and its functions */ 
+void evidence_hit_test() { 
+
+    printf("TESTING HIT TEST\n\n"); 
+    
+    double t = 5.1; 
+    location hit_point = xyz_expr(4, 7, 5); 
+
+    hit_test hit; 
+    hit.miss = 1; 
+    hit.hit_point = hit_point; 
+    hit.t = t; 
+    hit_test_show(stderr, hit); 
+
+    hit_test miss; 
+    hit.miss = 0; 
+    hit_test_show(stderr, miss); 
+
+    hit_test exp_test = hit_test_expr(5, hit_point); 
+    hit_test_show(stderr, exp_test); 
+
+    hit_test_show(stderr, miss_expr() ); 
+}
+
+
+int main() { 
+    evidence_hit_test(); 
+    return 0; 
+} 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* some random function to test function pointer */ 
+color sc(object* o, location intersection) { 
+
+       return color_expr(0, 0, 0); 
+} 
+
+/* testing stage functions */ 
+void evidence_stage() { 
+
+    printf("\nTesting Stage\n"); 
+    
+    //code for making the scene for stage 
+    xyz ulc = xyz_expr(0, 0, 0); 
+    double w = 1.5, h = 1;  
+    color shine = color_expr(0.1, 0.1, 0.1); 
+    color (*surface_color)(object*, location) = &sc; 
+    location v = xyz_expr(0, 0, 0); 
+    double r = 3;  
+    
+    poster p = poster_expr(ulc, w, h, surface_color, shine); 
+    sphere s = sphere_expr(v, r, surface_color, shine);    
+    
+    object op; 
+    op.tag = POSTER;
+    op.o.p = p; 
+
+    object os;
+    os.tag = SPHERE; 
+    os.o.s = s; 
+
+    obj_list* olist = ol_singleton(op); 
+    olist = ol_cons(os, olist); 
+
+    scene sc; 
+    sc.objects = olist; 
+    sc.bg = color_expr(0, 0, 0); 
+
+    //code for making camera for stage */ 
+    camera c = camera_expr(20, 30, xyz_expr(1, 1, 1) ); 
+
+    //make stage 
+    stage stg; 
+    stg.s = sc;
+    stg.c = c; 
+
+    stage_show(stderr, stg); 
+    
+        
+} 
+
+int main() { 
+
+    evidence_stage(); 
+    return 0; 
+} 
+
+ 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+
+/* some random function to test object pointer */ 
+color sc(object* o, location intersection) { 
+
+       return color_expr(0, 0, 0); 
+} 
+
+/* testing intersect */ 
+void evidence_intersect() { 
+
+    printf("Testing Intersect\n"); 
+
+    //going to make several types of vectors and objects
+    xyz ulcs [5]; 
+    location vs [5];
+    poster posters[5];
+    sphere spheres[5]; 
+    object objects[10]; //will contain spheres and posters 
+    int radius = 3; //just one type of radius 
+
+    double w = 10, h = 15;  
+    color shine = color_expr(0, 0, 0); 
+    color (*surface_color)(object*, location) = &sc; 
+
+    for(int i = 0; i < 5; ++i) { 
+	xyz input = xyz_expr(i, i, 1 + i); 
+	ulcs[i] = input; 
+	vs[i] = input; 	
+	
+	posters[i] = poster_expr(ulcs[i], w, h, surface_color, shine);
+	spheres[i] = sphere_expr(vs[i], radius, surface_color, shine); 	
+	
+	object op;
+	op.tag = POSTER; 
+	op.o.p = posters[i];
+	objects[2 * i] = op; 
+
+	object os; 
+	os.tag = SPHERE; 
+	os.o.s = spheres[i]; 
+	objects[2 * i + 1] = os; 
+    } 	
+    
+    location ray_origins [3]; 
+    direction ray_dirs [3]; 
+    ray rays [3]; 
+    hit_test tests [10];
+
+    for(int i = 0; i < 3; ++i) { 
+	ray_origins[i] = xyz_expr(i - 1, i - 1, i - 1); 
+	ray_dirs[i] = xyz_expr(i * i, i * i, i * i); 
+	rays[i] = ray_expr(ray_origins[i], ray_dirs[i] ); 
+	 	
+	for(int j = 0; j < 10; ++j) { 
+	    tests[i] = intersect(rays[i], objects[j] );
+	    hit_test_show(stderr, tests[i]);   
+	} 
+
+	puts(" "); 
+	 
+    } 
+
+} 
+
+int main() { 
+
+    evidence_intersect(); 
+    return 0; 
+} 
+
+ 
+/* Karl Jiang, karljiang 
+ * CMSC 152, Winter 2016 
+ * test texture stuff
+ */ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
+#include "raytracer.h" 
+
+/* test tecture.c functions */ 
+void evidence_poster_red_distance() { i
+    /* 
+    object *o = (object*) malloc(sizeof(object)); 
+    o -> o.p = poster_expr(xyz_expr(5, 5, 5), 10, 10, 
+
+    free(o);
+    */  
+}
+
+void evidence_poster_rbg_distance() { 
+
+} 
+
+void evidence_sphere_loc_to_rbg() { 
+
+} 
+
+void evidence_sphere_horiz_stripes() { 
+
+} 
+
+int main() { 
+    
+    void evidence_poster_red_distance(); 
+    void evidence_poster_rbg_distance();   
+    void evidence_sphere_loc_to_rbg(); 
+    void evidence_sphere_horiz_stripes(); 
+    
+    return 0; 
+} 

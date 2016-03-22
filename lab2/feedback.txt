@@ -1,0 +1,320 @@
+_total score_ 94 / 104 
+
+;; === correctness ===
+
+;; ====== correctness
+;; === correctness ===
+;; hex_byte					6/12
++1 - correct answer for 1
++1 - correct answer for 5
++2 - correct answer for 10
++4 - correct answer for 20
++4 - correct answer for 90
+
+;; octal_byte				12/12
++1 - correct answer for 1
++1 - correct answer for 5
++2 - correct answer for 10
++4 - correct answer for 20
++4 - correct answer for 90
+
+;; int_byte					8/8
++2 - correct answer for 1
++2 - correct answer for 10
++4 - correct answer for 90
+
+;; hex_int					2/4
++2 - correct answer for 0x04892047
++2 - correct answer for 0xFA0B38C8
+
+;; octal_int				4/4
++2 - correct answer for 0x04892047
++2 - correct answer for 0xFA0B38C8
+
+;; binary_int				4/4
++2 - correct answer for 0x04892047
++2 - correct answer for 0xFA0B38C8
+
+;; compilation
++10 - compiled properly with test files
+
+;; correctness _subtotal_:				46/54
+
+;; graded by Maria Hyun
+;; === style ===
+
+;; development process		     8/ 10 incorrect Makefile (from lab1)
+-4 - compiled properly with their own files
+-4 - functions are complete and in the appropriate files
+-4 - using subversion correctly		
+(take off no more than 10)
+
+;; adequate tests                     10/ 10 
+(for helper functions, as well)
+
+;; well-written purposes              4/ 4
+;; proper indentation, line breaks    4/ 4
+;; well-named variables		      4/ 4
+;; well-chosen types		      4/ 4
+
+;; === efficiency ===
+;; proper abstraction through functions 8/ 8
+-3 - instance of repeated code in multiple functions - make function
+-2 - many helper functions (more than 4)
+;; avoiding blatant inefficiency    6/ 6
+ -1 - used exponent or power functions 
+ -2 - inappropriate control structure
+ -2 - function call in for loop bounds for static answer
+ -2 - repeated function calls with same input and same result
+(take off no more than 6)
+
+;; === producing true recursive solutions ===
+-5 - used loops (anywhere)
+-5 - used global variables
+-5 - used arrays
+
+;; style _subtotal_:		    48/ 50
+
+
+;; graded by Tatiana
+
+/* Changes from decimal to hexadecimal. 8 bits -> 2 digits. */
+void hex_char(unsigned char byte);  
+/* Changes from decimal to hexadecimal. 32 bits -> 8 digits*/
+void hex_int(unsigned int n);
+
+/* Changes from decimal to octal. 8 bits -> 3 digits. */
+void octal_char(unsigned char byte);  
+/* Changes from decimal to octal. 32 bits -> 11 digits */
+void octal_int(unsigned int n);
+
+/* Changes from decimal to binary. 8  digits*/
+void binary_char(unsigned char byte);  
+/* Changes from decimal to binary. 32 digits */
+void binary_int(unsigned int n);
+
+#include <stdio.h>
+#include <stdlib.h> 
+
+
+/* Turns the input unsigned int - which should be less 
+than whatever -ecimal form, and converts it accordingingly. 
+Covers the hex, octal, binary
+*/ 
+void print_type_digit(unsigned int bit, unsigned int divisor) {
+ 
+    if(bit > 10) {  
+	switch(bit) { 
+    	    case 15: 
+		printf("F");
+		break;  
+	    case 14: 
+		printf("E"); 
+		break;  
+	    case 13: 
+		printf("D"); 
+		break;  
+	    case 12: 
+		printf("C"); 
+		break;  
+	    case 11: 
+		printf("B");
+		break;  
+	    case 10: 
+		printf("A");
+		break;  
+	    }  
+    } 
+    else 
+	printf("%u", bit); 
+} 
+
+
+/* General function to print out the changed base from 
+* base 10 to 2, 8, 16. 
+* Inputs: 
+* byte: base 10 number to be converted 
+* count: Integer representing number of digits to print  
+* divisor: new base (ie. base 16 would be divisor = 16) 
+*/ 
+void convert(unsigned int byte, unsigned int count, 
+    unsigned int divisor) { 
+
+    if(count <= 0) 
+	return; 
+    count--; 
+    if(byte) {  
+	convert(byte / divisor, count, divisor); 
+	print_type_digit(byte % divisor, divisor);    
+    } 
+    else { 
+	printf("0"); 
+	convert(byte, count, divisor);  
+    } 	   
+ }     
+ 
+
+/* Changes from decimal to hexadecimal. 8 bits -> 2 digits. */  
+void hex_char(unsigned char byte) {
+     convert(byte, 2, 16); 
+}
+
+
+/* Changes from decimal to hexadecimal. 32 bits -> 8 digits*/ 
+void hex_int(unsigned int n) { 
+    convert(n, 8, 16); 
+}
+
+/* Changes from decimal to octal. 8 bits -> 3 digits. */ 
+void octal_char(unsigned char byte) { 
+    convert(byte, 3, 8); 
+}   
+
+/* Changes from decimal to octal. 32 bits -> 11 digits */   
+void octal_int(unsigned int n) { 
+    convert(n, 11, 8); 
+} 
+
+/* Changes from decimal to binary. 8  digits*/ 
+void binary_char(unsigned char byte) { 
+    convert(byte, 8, 2);  
+}
+ 
+/* Changes from decimal to binary. 32 digits */ 
+void binary_int(unsigned int n) { 
+    convert(n, 32, 2); 
+} 
+#include <stdio.h> 
+#include <stdlib.h> 
+#include "lab2.h" 
+
+
+void evidence_hex_char() { 
+   
+    printf("\nTesting hex_char\n");  
+    unsigned char bytes [] = {0, 1, 5, 15, 16, 17, 100, 255}; 
+    char *expected [] = {"00", "01", "05", "0F", "10", 
+		    "11", "64", "FF"};
+    for(int i = 0; i < 8; ++i) { 
+	printf("input: %d \t| expected: %s \t| actual: ", 
+	    bytes[i], expected[i]); 
+	hex_char(bytes[i]); 
+	printf("\n"); 
+    } 
+} 
+
+void evidence_hex_int() { 
+   
+    printf("\nTesting hex_int \n");  
+    unsigned int inputs [] = {0, 1, 5, 15, 16, 17, 
+		254, 234535, 4294967295}; 
+    char *expected[] = {"00000000","00000001", "00000005",
+	    "0000000F", "00000010", "00000011", "000000FE",
+	    "00039427", "FFFFFFFF"}; 
+    int cases = 9;
+
+    for(int i = 0; i < cases; i++) {
+        printf("input %d: \t| expected: %s \t| actual: ",
+		 inputs[i], expected[i]);
+	hex_int(inputs[i]); 
+	printf("\n");  
+    }
+} 
+
+
+void evidence_octal_char() { 
+
+    printf("\nTesting octal_char \n");  
+    unsigned char inputs [] = {0, 1, 7, 8, 16, 64, 255}; 
+    char *expected[] = {"000", "001", "007", "010", "020", "100", "377"}; 
+    int cases = 7;
+
+    for(int i = 0; i < cases; i++) {
+        printf("input %d: \t| expected: %s \t| actual: ",
+		 inputs[i], expected[i]);
+	octal_char(inputs[i]); 
+	printf("\n");  
+    }
+
+} 
+
+
+void evidence_octal_int() { 
+    
+    printf("\nTesting octal_int \n");
+  
+    unsigned int inputs [] = {0, 1, 7, 8, 16, 254,
+	 234535, 4294967295}; 
+    char *expected[] = {"00000000000","00000000001", "00000000007",
+	     "00000000010", "00000000020", "00000000376",
+	    "00000712047", "37777777777"}; 
+    int cases = 8;
+
+    for(int i = 0; i < cases; i++) {
+        printf("input %d: \t| expected: %s \t| actual: ",
+		 inputs[i], expected[i]);
+	octal_int(inputs[i]); 
+	printf("\n");  
+    }
+} 
+
+
+void evidence_binary_char() { 
+    
+    printf("\nTesting binary_char \n");  
+    unsigned char inputs [] = {0, 1, 2, 8, 17, 64, 255}; 
+    char *expected[] = {"00000000", "00000001", "00000010",
+	 "00001000", "00010001", "01000000", "11111111"}; 
+    int cases = 7;
+
+    for(int i = 0; i < cases; i++) {
+        printf("input %d: \t| expected: %s \t| actual: ",
+		 inputs[i], expected[i]);
+	binary_char(inputs[i]); 
+	printf("\n");  
+    }
+
+} 
+
+void evidence_binary_int() { 
+    printf("\nTesting octal_int \n");/* TYPO:  printf("\nTesting binary_int \n"); */
+
+  
+    unsigned int inputs [] = {0, 1, 7, 8, 16, 387,
+	 234535, 4294967295}; 
+    char *expected[] = { "00000000000000000000000000000000",
+"00000000000000000000000000000001","00000000000000000000000000000111",
+"00000000000000000000000000001000","00000000000000000000000000010000",
+"00000000000000000000000110000011","00000000000000111001010000100111",
+"11111111111111111111111111111111"}; 
+
+    int cases = 8;
+
+    for(int i = 0; i < cases; i++) {
+        printf("input %d: \n| expected: \t %s \n| actual: \t ",
+		 inputs[i], expected[i]);
+	binary_int(inputs[i]); 
+	printf("\n\n");  
+    } 
+} 
+
+
+int main() { 
+    
+    printf("Test\n"); 
+    
+    evidence_hex_char();
+    evidence_hex_int(); 
+
+    evidence_octal_char(); 
+    evidence_octal_int(); 
+
+    evidence_binary_char(); 
+    evidence_binary_int();          
+
+    return 0; 
+} 
+
+lab2 : lab2.h lab2.c evidence_lab2.c
+	clang -Wall -o ev lab2.c evidence_lab2.c
+

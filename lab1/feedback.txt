@@ -1,0 +1,205 @@
+_total score_ 96.00 / 100 
+ 
+ (regraded by Liwen Zhang on 1/17/16) 
+ 
+;; === correctness ===
+ 
+***testing expt
+- Score: 4/4, Correct answer for (2,4) is 16, Your answer is 16
+- Score: 4/4, Correct answer for (3,4) is 81, Your answer is 81
+- Score: 3/3, Correct answer for (2,7) is 128, Your answer is 128
+- Score: 3/3, Correct answer for (2,11) is 2048, Your answer is 2048
+
+***testing ss
+- Score: 4/4, Correct answer for (3,4) is 81, Your answer is 81
+- Score: 4/4, Correct answer for (4,8) is 65536, Your answer is 65536
+- Score: 3/3, Correct answer for (2,17) is 131072, Your answer is 131072
+- Score: 3/3, Correct answer for (2,11) is 2048, Your answer is 2048
+
+***testing ssm
+- Score: 4/4, Correct answer for (3,9,7) is 6, Your answer is 6
+- Score: 4/4, Correct answer for (2,13,9) is 2, Your answer is 2
+- Score: 0/4, Correct answer for (2,13,88) is 8, Your answer is 96
+
+***File Format
+- Score: 5.00/5.00, Functions are in the appropriate files
+- Score: 5.00/5.00, Compiled properly with their own files
+- Score: 10.00/10.00, Compiled properly with test files
+
+;; correctness _subtotal_: 56.00/60.00
+
+;; graded by Maria Hyun
+
+;; === style ===
+
+;; well-written purposes            4 / 4
+;; proper indentation, line breaks  4 / 4
+some problem with indentation. 
+i guess your editor treats 1 tab = 8 spaces.
+however, it's not true for all editors and hence
+it's better to be consistent and use either tabs
+or spaces for *all* indentation.
+
+;; well-named variables		    4 / 4
+;; well-chosen types		    4 / 4
+;; adequate tests                  12 / 12
+(3 each function)
+;; using subversion correctly       4 / 4
+
+;; === efficiency ===
+;; proper abstraction through functions 0 / 0
+;; avoiding blatant inefficiency  8 / 8
+ -2 - inappropriate control structure
+ -2 - function call in for loop bounds for static answer
+ -2 - repeated function calls with same input and same result
+
+
+;; style _subtotal_:		 40 / 40
+
+;; graded by Liwen Zhang
+
+
+
+
+
+
+
+
+======== evidence_expt.c ========
+/* Karl Jiang, karljing
+ * CS152, Winter 2016
+ * Lab 1 
+ */
+
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include "expt.h" 
+
+/* evidence_expt: test expt */ 
+void evidence_expt() { 
+    
+    printf("*** testing expt\n");
+    printf("-expecting 1: %ld\n", expt(2, 0) ); 
+    printf("-expecting 256: %ld\n", expt(2, 8) ); 
+    printf("-expecting 2: %ld\n", expt(2, 1) ); 
+    printf("-expecting 1: %ld\n", expt(1, 0) ); 
+    printf("-expecting 1: %ld\n", expt(1, 10) ); 
+    printf("-expecting 0: %ld\n", expt(0, 3) ); 
+    printf("-expecting 1: %ld\n", expt(0, 0) ); 
+    printf("-expecting -3: %ld\n", expt(-3, 1) ); 
+    printf("-expecting 9: %ld\n", expt(-3, 2) ); 
+
+}
+
+/* evidence_expt: test ss */ 
+void evidence_ss() { 
+
+    printf("*** testing ss\n");
+    printf("-expecting 1: %ld\n", ss(2, 0) ); 
+    printf("-expecting 256: %ld\n", ss(2, 8) ); 
+    printf("-expecting 2: %ld\n", ss(2, 1) ); 
+    printf("-expecting 1: %ld\n", ss(1, 0) ); 
+    printf("-expecting 1: %ld\n", ss(1, 10) ); 
+    printf("-expecting 0: %ld\n", ss(0, 3) ); 
+    printf("-expecting 1: %ld\n", ss(0, 0) ); 
+    printf("-expecting -3: %ld\n", ss(-3, 1) ); 
+    printf("-expecting 9: %ld\n", ss(-3, 2) ); 
+
+} 
+
+/* evidence_expt: test ssm */ 
+void evidence_ssm() { 
+
+    printf("*** testing ssm\n");
+    printf("-expecting 24: %d\n", ssm(2, 10, 1000) ); 
+    printf("-expecting 0: %d\n", ssm(0, 8, 7) ); 
+    printf("-expecting 2: %d\n", ssm(2, 9, 3) ); 
+    printf("-expecting 1: %d\n", ssm(3, 0, 1000) ); 
+    printf("-expecting 1: %d\n", ssm(0, 0, 100) ); 
+    printf("-expecting 1: %d\n", ssm(2, 60, 0) ); //throw error here 
+} 
+
+
+int main(int argc, char *argv[]) { 
+    
+    printf("CS 152 Lab1\n"); 
+    evidence_expt(); 
+    evidence_ss(); 
+    evidence_ssm(); 
+    return 0; 
+} 
+ 
+ 
+======== expt.c ========
+/*Karl Jiang, karljiang
+CS 152, Winter 2016
+Lab 1
+*/ 
+
+#include <stdio.h> 
+#include <stdlib.h> 
+
+
+/* expt : linear time recursive exponentiation */
+long int expt(int a, unsigned int n){
+	
+    if(n == 0)
+	return 1;  	  
+    else 
+	return a * expt(a, n - 1); 
+}
+
+
+/* ss : exponentiation by successive squaring */
+long int ss(int a, unsigned int n) { 
+    
+    if(n == 0)
+	return 1; 
+    if(n % 2 == 1) 
+	return a * ss(a, n - 1); 
+    long int split = ss(a, n/2); 
+    return split * split;  
+}
+ 
+
+/* _ssm : exponentiation modulo m by successive squaring
+ * this is the helper function for ssm  
+ */
+int ssm(int a, unsigned int n, unsigned int m) { 
+    
+    if(m == 0) { 
+	fprintf(stderr, "error: cannot use mod 0.\n"); 
+	exit(1); 
+    }  
+    if(n == 0)  
+	return 1;  
+    if(n % 2) 
+	return (a % m) * ssm(a, n-1, m); 
+    int split = ssm(a, n/2, m); 
+    return (split * split) % m;     
+} 
+ 
+ 
+======== expt.h ========
+/* Karl Jiang, karljiang
+ * CS 152, Winter 2016
+ * Lab 1
+ * expt.h 
+ */
+ 
+/* expt : linear time recursive exponentiation */
+long int expt(int a, unsigned int n);
+
+/* ss : exponentiation by successive squaring */
+long int ss(int a, unsigned int n);
+
+/* ssm : exponentiation modulo m by successive squaring */
+int ssm(int a, unsigned int n, unsigned int m);
+ 
+ 
+======== Makefile ========
+evidence: expt.h expt.c evidence_expt.c
+	clang-3.6 -Wall -o evidence_expt expt.c evidence_expt.c
+ 
+ 

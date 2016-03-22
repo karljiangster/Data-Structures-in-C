@@ -1,0 +1,299 @@
+_total score_ 93 / 100
+
+;; === correctness ===
+
+>>>>>>>>> testing bucket.c <<<<<<<<<
+[bucket_cons]    Test: cons on NULL (singleton) ; 
+Points: 1 / 1
+PASSED
+
+[bucket_cons]    Test: cons onto a single bucket; 
+Points: 1 / 1
+PASSED
+
+[bucket_cons]    Test: make a list of three buckets; 
+Points: 1 / 1
+PASSED
+
+[bucket_num_entries]    Test: length of an empty list ; 
+expecting : 0 
+your result : 0 
+Points: 1 / 1
+PASSED
+
+[bucket_num_entries]    Test: length of a singleton list ; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+[bucket_num_entries]    Test: length of a list of three buckets; 
+expecting : 3 
+your result : 3 
+Points: 1 / 1
+PASSED
+
+[bucket_contains]    Test: search in an empty list; 
+expecting : 0 
+your result : 0 
+Points: 1 / 1
+PASSED
+
+[bucket_contains]    Test: target doesn't exist; 
+expecting : 0 
+your result : 0 
+Points: 1 / 1
+PASSED
+
+[bucket_contains]    Test: target exist but not the last entry; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+[bucket_contains]    Test: target is the last entry ; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+[bucket_contains]    Test: target is the last entry; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+>>> sample output of bucket_show
+showing bucket list: second -> singleton
+second|singleton|
+
+showing bucket list: head -> second -> singleton
+head|second|singleton|
+
+
+ _bucket_subtotal_:14/14
+>>>>>>>>> testing htbl.c <<<<<<<<<
+[good_hash]    Test: adams-cosmo; 
+expecting : -411514287 
+your result : -2032861884 
+Points: 0 / 1
+FAILED
+
+[good_hash]    Test: fitz-lou.34; 
+expecting : 1047949752 
+your result : -2035082441 
+Points: 0 / 1
+FAILED
+
+[good_hash]    Test: al.adams383; 
+expecting : -1290208960 
+your result : -2032861884 
+Points: 0 / 1
+FAILED
+
+[good_hash]    Test: madonna.jagger169; 
+expecting : -638594199 
+your result : 1274846866 
+Points: 0 / 1
+FAILED
+
+[good_hash]    Test: erikson-mary.79; 
+expecting : 1045867060 
+your result : -2050056980 
+Points: 0 / 1
+FAILED
+
+[good_hash]    Test: olson.sammy.96; 
+expecting : 2043915590 
+your result : -976359745 
+Points: 0 / 1
+FAILED
+
+[good_hash]    Test: alison617; 
+expecting : -466613959 
+your result : -1366211570 
+Points: 0 / 1
+FAILED
+
+
+
+[bad_hash] ******* bad hash ********
+[bad_hash] bad_hash(adams-cosmo) --> 58
+[bad_hash] bad_hash(fitz-lou.34) --> 48
+[bad_hash] bad_hash(al.adams383) --> 58
+[bad_hash] Points: 3 / 3
+
+[htbl_new] creating htbl_new...table = htbl_new(&good_hash,10);...OK 
+[htbl_new] check n_buckets...table->n_buckets == 10? ...OK 
+[htbl_new] checking initialization of buckets...table->buckets[0..9] == NULL ?...OK 
+[htbl_new] Points: 3 / 3
+
+[htbl_ins] Inserting 21 strings...
+[htbl_ins] Inserting adams-cosmo...
+[htbl_ins] now, the bucket has 1 items. (expecting 1)  the table has 1 items. (expecting 1)
+[htbl_ins] Inserting fitz-lou.34...
+[htbl_ins] now, the bucket has 1 items. (expecting 1)  the table has 2 items. (expecting 2)
+[htbl_ins] Inserting al.adams383...
+[htbl_ins] now, the bucket has 1 items. (expecting 1)  the table has 3 items. (expecting 3)
+[htbl_ins] Inserting madonna.jagger169...
+[htbl_ins] now, the bucket has 1 items. (expecting 1)  the table has 4 items. (expecting 4)
+[htbl_ins] Inserting erikson-mary.79...
+[htbl_ins] now, the bucket has 1 items. (expecting 1)  the table has 5 items. (expecting 5)
+[htbl_ins] Inserting olson.sammy.96...
+[htbl_ins] now, the bucket has 2 items. (expecting 2)  the table has 6 items. (expecting 6)
+[htbl_ins] Inserting alison617...
+[htbl_ins] now, the bucket has 2 items. (expecting 2)  the table has 7 items. (expecting 7)
+[htbl_ins] Inserting alkhafaji.murray-11...
+[htbl_ins] now, the bucket has 1 items. (expecting 1)  the table has 8 items. (expecting 8)
+[htbl_ins] Inserting bart-bonham15...
+[htbl_ins] now, the bucket has 3 items. (expecting 3)  the table has 9 items. (expecting 9)
+[htbl_ins] Inserting washington-lisa.37...
+[htbl_ins] now, the bucket has 2 items. (expecting 2)  the table has 10 items. (expecting 10)
+[htbl_ins] Inserting adams-cosmo...
+[htbl_ins] now, the bucket has 2 items. (expecting 2)  the table has 11 items. (expecting 11)
+[htbl_ins] Inserting fitz-lou.34...
+[htbl_ins] now, the bucket has 2 items. (expecting 2)  the table has 12 items. (expecting 12)
+[htbl_ins] Inserting al.adams383...
+[htbl_ins] now, the bucket has 2 items. (expecting 2)  the table has 13 items. (expecting 13)
+[htbl_ins] Inserting madonna.jagger169...
+[htbl_ins] now, the bucket has 3 items. (expecting 3)  the table has 14 items. (expecting 14)
+[htbl_ins] Inserting erikson-mary.79...
+[htbl_ins] now, the bucket has 4 items. (expecting 4)  the table has 15 items. (expecting 15)
+[htbl_ins] Inserting olson.sammy.96...
+[htbl_ins] now, the bucket has 5 items. (expecting 5)  the table has 16 items. (expecting 16)
+[htbl_ins] Inserting alison617...
+[htbl_ins] now, the bucket has 4 items. (expecting 4)  the table has 17 items. (expecting 17)
+[htbl_ins] Inserting alkhafaji.murray-11...
+[htbl_ins] now, the bucket has 3 items. (expecting 3)  the table has 18 items. (expecting 18)
+[htbl_ins] Inserting bart-bonham15...
+[htbl_ins] now, the bucket has 6 items. (expecting 6)  the table has 19 items. (expecting 19)
+[htbl_ins] Inserting washington-lisa.37...
+[htbl_ins] now, the bucket has 4 items. (expecting 4)  the table has 20 items. (expecting 20)
+[htbl_ins] Inserting vincent663...
+[htbl_ins] now, the bucket has 3 items. (expecting 3)  the table has 21 items. (expecting 21)
+
+[htbl_ins] Points : 10 / 10
+
+[htbl_load_factor]    Test: load factor of a table with 21 entries and 10 buckets
+; 
+expecting : 2.100000 
+your result : 2.100000 
+Points: 2 / 2
+PASSED
+
+[htbl_max_bucket] bucket 0 has 6 items.  (expecting 0 and 6)
+[htbl_max_bucket] bucket 1 has 3 items.  (expecting 1 and 3)
+[htbl_max_bucket] Points: 6 / 6
+
+[htbl_num_entries]    Test: ; 
+expecting : 21.000000 
+your result : 21.000000 
+Points: 2 / 2
+PASSED
+
+[htbl_num_entries]    Test: ; 
+expecting : 5.000000 
+your result : 5.000000 
+Points: 2 / 2
+PASSED
+
+Hash of Fork: 35517707
+[htbl_member]    Test: check membership for adams-cosmo ; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+Hash of Fork: 35517707
+[htbl_member]    Test: check membership for fitz-lou.34 ; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+Hash of Fork: 35517707
+[htbl_member]    Test: check membership for cnet-doesn't-exist ; 
+expecting : 0 
+your result : 0 
+Points: 1 / 1
+PASSED
+
+Hash of Fork: 35517707
+[htbl_member]    Test: check membership for madonna.jagger169 ; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+Hash of Fork: 35517707
+[htbl_member]    Test: check membership for erikson-mary.79 ; 
+expecting : 1 
+your result : 1 
+Points: 1 / 1
+PASSED
+
+Hash of Fork: 35517707
+[htbl_member]    Test: check membership for olson.sammy.96 ; 
+expecting : 0 
+your result : 0 
+Points: 1 / 1
+PASSED
+
+Hash of Fork: 35517707
+[htbl_member]    Test: check membership for alison617 ; 
+expecting : 0 
+your result : 0 
+Points: 1 / 1
+PASSED
+
+[htbl_show] ******* htbl_show sample output (a table of 5 entries)  ********
+[htbl_show] (indices of buckets must be displayed and must be on the left.)
+ 
+ 
+ 
+~~~HASH TABLE~~~
+Bucket 0) 	|al.adams383, fitz-lou.34,  
+Bucket 1) 	|erikson-mary.79, madonna.jagger169, adams-cosmo,  
+Bucket 2) 	| 
+
+[htbl_show] Points: 4 / 4
+
+_htbl_subtotal_:39/46
+
+
+;; correctness _subtotal_:      53/60
+
+Graded by : Liwen Zhang
+
+;; === style ===
+
+;; free calls
+;; bucket_free				7 / 7
+;; htbl_free				13 / 13
+-1 - doesn't free strings
+-1 - doesn't check string or not string
+-5 - frees one bucket, not the rest
+-3 - frees bucket before advancing pointer
+
+
+;; development process		    10 / 10
+-4 - compiled properly with their own files
+-4 - functions are complete and in the appropriate files
+-4 - using subversion correctly		
+-15 - required editing their code (to do more than problems above)
+(take off no more than 15 - but allow -15 if not compiling)
+
+;; adequate tests                   0  / 0
+(no seperate test is required for this lab)
+
+;; well-written purposes             2 / 2
+;; proper indentation, line breaks   2 / 2
+;; well-named variables		     2 / 2
+;; well-chosen types		     2 / 2
+;; uses helper functions	     2 / 2
+
+;; style _subtotal_:		   40 / 40
+
+
+;; graded by Jiajun Shen
+

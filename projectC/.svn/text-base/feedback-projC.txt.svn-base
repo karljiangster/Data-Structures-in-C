@@ -1,0 +1,56 @@
+;; Project C Guideline
+
+;; _total-score_   95/100
+
+Good job!
+
+;; ====== correctness
+
+;; Test A: Cube faces
+;; cube data                           5/ 5
+
+;; Test B: Cube Intersection
+;; displays cube's front               5/ 5
+;; displays at least one other side    5/ 5
+;; displays all other sides            5/ 5
+;; shadows                             5/ 5
+;; position                            5/ 5
+
+;; Test C:  map_texture_on_cube_faces
+;; Same picture on every face         10/10
+
+;; Test D:  map_texture_around_cube
+;; Look at sides - stripes only        5/ 5
+
+;; Test E: Student's bitmap_from_file
+;; pictures match? Ignore shadowing / ambient light issues
+;;                                     5/ 5
+
+;; Test F: Shine
+;; Sphere has shine                   10/10
+;; Shine is not in shadow              0/ 5 
+   (shadows should cancel specular reflection)
+
+
+;; === correctness subtotal ===       60/65
+
+;; === style ===
+
+;; development process                15/15
+
+;; adequate tests                      4/ 4
+
+;; well-written purposes               4/ 4
+
+;; proper indentation, line breaks     4/ 4
+
+;; well-named variables                4/ 4
+
+;; === efficiency ===
+
+;; well-chosen control structures      4/ 4
+
+;; _style_subtotal                    35/35
+
+;; graded by Adam Shaw
+
